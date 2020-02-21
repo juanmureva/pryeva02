@@ -1,0 +1,17 @@
+{
+  "name": "rossi",
+  "version": "1.0.0",
+  "description": "PROYECTO FCT ALEJANDRO ROSSI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node Server.js"
+  },
+  "author": "Alejandro Rossi",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.5.12",
+    "request": "^2.88.0"
+  }
+}

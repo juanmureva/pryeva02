@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Proyecto FCT - Alejandro Rossi</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.3/angular-route.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="/rossi04/public/Code/themes/gray.js"></script>
+
+    <style>
+            body {
+                background-image: url(/rossi04/public/images/bgHistory.jpg);
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-size: auto auto;
+                background-position: center bottom;
+            }
+            
+            h2 {
+                color:white;
+            }
+            .form-group {
+                color: white;
+            }
+    </style>
+
+</head>
+
+<body>
+
+    <div>
+            <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                        <a class="nav-link" href="/rossi04">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link" href="/rossi04/live">Calidad del Aire en Tiempo Real</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link active" href="/rossi04/history">Datos Historicos</a>
+                        </li>
+                    </ul>
+                </nav>
+
+        <div class="container-fluid">
+
+            <div class="row">
+
+                <div class="col-sm-4" style="display: inline-block; padding: 30px 50px">
+                    <h2>Datos Historicos de Contaminación</h2>
+                    <br />
+                    <form id="form" name="form">
+
+                        <div class="form-group">
+                            <label for="estacion"><b>Estación idx:</b></label>
+                            <input class="form-control" id="estacion" name="estacion"
+                                value="8495">
+                            </input>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contaminante"><b>Contaminante:</b></label>
+                            <select class="form-control" id="contaminante" name="contaminante">
+                                <option value="data.iaqi.co.v">co: "Monóxido de Carbono"</option>
+                                <option value="data.iaqi.no2.v">no2: "Dióxido de Nitrogeno"</option>
+                                <option value="data.iaqi.o3.v">o3: "Ozono"</option>
+                                <option value="data.iaqi.pm10.v">pm10: "Particulas solidas &lt;10µm"</option>
+                                <option value="data.iaqi.so2.v">so2: "Dióxido de Azufre"</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fechaInicial"><b>Fecha Inicial:</b></label>
+                            <input class="form-control" type="date" id="fechaInicial" name="fechaInicial"
+                                value="YYYY-MM-DD"></input>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fechaFinal"><b>Fecha Final:</b></label>
+                            <input class="form-control" type="date" id="fechaFinal" name="fechaFinal"
+                                value="YYYY-MM-DD"></input>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Cargar Gráfica</button>
+
+                        <script type="text/javascript">
+
+                            // al enviar el formulario, lo capturamos sobre la variable evt.
+                            document.querySelector('form').onsubmit = evt => {
+
+                                // evitamos que nos de error al enviar el formulario a través de la redirección HTTP por defecto.
+                                evt.preventDefault();
+
+                                // obtenemos los valores de los campos del formulario.
+                                const formData = {
+                                    estacion: document.querySelector('input[name=estacion]').value,
+                                    contaminante: document.querySelector('select[name=contaminante]').value,
+                                    fechaInicial: document.querySelector('input[name=fechaInicial]').value,
+                                    fechaFinal: document.querySelector('input[name=fechaFinal]').value,
+                                }
+                                console.log('En histori antes del fetch')
+                                // enviamos el formulario codificado en JSON al servidor mediante fetch.
+                                fetch('/rossi04/history/find', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(formData),
+                                })
+
+                                    // recibimos la respuesta del servidor con el resultado sobre la variable datos.
+                                    .then(resp => resp.json())
+                                    .then(datos => {
+
+                                        // función para obtener la ruta completa de un campo anidado dentro de un objeto.
+                                        function findPropPath(obj, name) {
+                                            for (var prop in obj) {
+                                                if (prop == name) {
+                                                    return name;
+                                                } else if (typeof obj[prop] == "object") {
+                                                    var result = findPropPath(obj[prop], name);
+                                                    if (result) {
+                                                        return prop + '.' + result;
+                                                    }
+                                                }
+                                            }
+                                            return null;
+                                        };
+
+                                        // declaramos la variable que contendrá los datos finales para la grafica.
+                                        window.datosChart = new String('Fecha,Valor\n\r');
+
+                                        // bucle para recorrer el array que recibimos de datos.
+                                        for (var i = 0; i < datos.length; i++) {
+
+                                            // obtenemos la ruta en notacion de puntos de la variable 'v' 
+                                            // que se encuentra dentro de datos.iaqi.[contaminante].v
+                                            var v = findPropPath(datos[i], 'v');
+
+                                            // funcion para obtener el valor del campo V 
+                                            // pasandole la variable de la anterior función.
+                                            var object = datos[i],
+                                                path = v,
+                                                getValue = (o, p) => p.split('.').reduce((r, k) => r[k], o);
+
+                                            // obtenemos el valor de la fecha en cada iteración del bucle.
+                                            var fecha = datos[i].data.time.s;
+                                            // obtenemos el valor del campo V mediante la función anterior.
+                                            var valor = getValue(object, path);
+
+                                            // añadimos el resultado de cada interación a la variable final.
+                                            datosChart = datosChart.concat(fecha, ",", valor, "\n");
+                                        };
+
+                                        // una vez que obtenemos los datos completos, 
+                                        // cargamos la grafica.
+                                        $.getScript('/rossi04/public/Code/cargarChartHistorico.js', function () { });
+                                    })
+                                    // controla los posibles errores.
+                                    .catch(err => console.log('Ha ocurrido el siguiente error: ' + err));
+                                }
+                        </script>
+                    </form>
+                </div>
+
+                <div class="col-sm-8" style="display: inline-block; padding-left: 50px; padding-right: 50px">
+
+                    <!-- contenedor que contendrá la grafica una vez cargada.--> 
+                    <div id="container" style="min-width: 310px; height: 600px"></div>
+
+                </div>
+
+            </div>
+        </div>
+        <br />
+    </div>
+
+</body>
+
+</html>

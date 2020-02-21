@@ -38,7 +38,11 @@ router.get("/", function (req, res) {
 });
 
 router.get("/Localizaciones", function (req, res) {
-    res.sendFile(path + "live.html");
+    res.sendFile(path + "localizaciones.html");
+});
+
+router.get("/Localizaciones/:idlocalizacion", function (req, res) {
+    res.send({"nombre":"esta es la localización 1"});
 });
 
 router.post("/live/save", function (req, res) {

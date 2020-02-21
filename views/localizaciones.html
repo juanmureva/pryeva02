@@ -17,12 +17,12 @@
     <script src="https://code.highcharts.com/modules/data.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="/rossi04/public/Code/API.js"></script>
-    <script src="/rossi04/public/Code/themes/skies.js"></script>
+    <script src="/pryeva02/public/Code/API.js"></script>
+    <script src="/pryeva02/public/Code/themes/skies.js"></script>
 
     <style>
         body {
-            background-image: url(/rossi04/public/images/bgLive.jpg);
+            background-image: url(/pryeva02/public/images/bgLive.jpg);
             background-repeat: no-repeat;
             background-size: cover;
         }
@@ -121,13 +121,13 @@
             <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                        <a class="nav-link" href="/rossi04">Inicio</a>
+                        <a class="nav-link" href="/pryeva02">Inicio</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link active" href="/rossi04/live">Calidad del Aire en Tiempo Real</a>
+                        <a class="nav-link active" href="/pryeva02/live">Calidad del Aire en Tiempo Real</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="/rossi04/history">Datos Historicos</a>
+                        <a class="nav-link" href="/pryeva02/history">Datos Historicos</a>
                         </li>
                     </ul>
                 </nav>
@@ -167,7 +167,7 @@
                                 estacion: estacion,
                             }
                             // enviamos el formulario codificado en JSON al servidor.                            
-                            fetch('/rossi04/live/save', {
+                            fetch('/pryeva02/live/save', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(searchData),

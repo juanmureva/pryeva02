@@ -1,12 +1,12 @@
 {
-  "name": "rossi",
+  "name": "juanMur",
   "version": "1.0.0",
   "description": "PROYECTO FCT ALEJANDRO ROSSI",
   "main": "server.js",
   "scripts": {
     "start": "node Server.js"
   },
-  "author": "Alejandro Rossi",
+  "author": "Juan Mur",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",

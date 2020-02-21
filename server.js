@@ -27,6 +27,12 @@ var aqiBDSchema = new mongoose.Schema({}, { strict: false });
 //                         'nombre de la conexion en la BD'
 var aqiBD = mongoose.model(colSismicas, aqiBDSchema);
 
+
+//importando rutas
+const localizacionRoutes = require('./routes/localizaciones')
+
+
+
 // declaramos las rutas a los diferentes recursos de nuestra aplicación.
 router.use(function (req, res, next) {
     console.log("/pryEva02" + req.method + " " + req.url);
@@ -37,13 +43,11 @@ router.get("/", function (req, res) {
     res.sendFile(path + "index.html");
 });
 
-router.get("/Localizaciones", function (req, res) {
+router.get("/LocalizacionesPage", function (req, res) {
     res.sendFile(path + "localizaciones.html");
 });
 
-router.get("/Localizaciones/:idlocalizacion", function (req, res) {
-    res.send({"nombre":"esta es la localización 1"});
-});
+
 
 router.post("/live/save", function (req, res) {
 
@@ -112,7 +116,12 @@ console.log("body: "+JSON.stringify(req.body))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use("/pryEva02/public", express.static(__dirname + "/public"));
+
+//rutas
+app.use('/pryEva02/localizaciones', localizacionRoutes)
 app.use("/pryEva02", router);
+
+
 app.use(function (req, res, next) {
     res.status(404).send("Error: no se encuentra la pagina solicitada.")
 })

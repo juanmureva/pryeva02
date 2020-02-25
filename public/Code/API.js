@@ -119,7 +119,8 @@ function showLocation(localizacion, output) {
 
 		// guardamos el codigo de la estación en el almacén local del navegador
 		// para luego utilizarlo en la pagina HTML.
-		localStorage.setItem('localizacion', localizacion._id);
+		alert(JSON.stringify(localizacion))
+		localStorage.setItem('localizacion', JSON.stringify(localizacion));
 		/** ASS
 		console.log("en API.js generando el botón guardar datos")
 		// generamos el boton para guardar los datos en la BD.
@@ -137,12 +138,19 @@ function showLocation(localizacion, output) {
 		output.append(table)
 		var tr = $("<tr>");
 		tr.append($("<th>").html(localizacion.localizacion));
-		tr.append($("<th>").html("<a href='/pryeva02/editlocation/"+localizacion.localizacion+"'>ver</a>").attr('style', 'text-align: center'));
+		tr.append($("<th>").html("<button>Editar</button>").attr('style', 'text-align: center'));
+
+		tr.append($("<th>").html("<button onclick='removeLocation()'>Eliminar</button>").attr('style', 'text-align: center'));
 		table.append(tr);
 
 	})
 
 
+}
+
+function removeLocation(){
+	let loc=JSON.parse( localStorage.getItem('localizacion'))
+	deleteLocalizacion(loc._id);
 }
 
 function token() {

@@ -28,7 +28,12 @@ router.put("/:idlocalizacion", function (req, res) {
 });
 
 router.delete("/:idlocalizacion", function (req, res) {
-    res.send({"nombre":"esta es la localización 1"});
+    let idLoc=req.params.idlocalizacion;
+    Localizaciones.findByIdAndDelete(idLoc, function (err) {
+        if (err) return handleError(err);
+        res.send({"nombre":"borrado ok!"});
+      });
+    
 });
 
 router.get('/search/:keyword', async (req, res) => {

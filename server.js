@@ -13,7 +13,7 @@ const urlLocal = 'mongodb://localhost:27017/infoSismica'
 const colSismicas = 'geoTerremotos'
 const colLocalizaciones = 'localizaciones'
 
-mongoose.connect(urlLocal, 
+mongoose.connect(urlLocal,
     { useNewUrlParser: true, useUnifiedTopology: true });
 var conn = mongoose.connection;
 
@@ -27,11 +27,8 @@ var aqiBDSchema = new mongoose.Schema({}, { strict: false });
 //                         'nombre de la conexion en la BD'
 var aqiBD = mongoose.model(colSismicas, aqiBDSchema);
 
-
 //importando rutas
 const localizacionRoutes = require('./routes/localizaciones')
-
-
 
 // declaramos las rutas a los diferentes recursos de nuestra aplicación.
 router.use(function (req, res, next) {
@@ -48,12 +45,15 @@ router.get("/LocalizacionesPage", function (req, res) {
 });
 
 
+router.get("/editlocation", function (req, res) {
+    res.sendFile(path + "editLocation.html");
+});
 
 router.post("/live/save", function (req, res) {
 
     var estacion = req.body.estacion;
     var token = "2925a12d6716caa9e5eff975b281dd6eb985552c";
-    
+
     // ejemplo:http://api.waqi.info/feed/@9495/?token=2925a12d6716caa9e5eff975b281dd6eb985552c
     var url = "http://api.waqi.info/feed/@" + estacion + "/?token=" + token + "";
 
@@ -85,7 +85,7 @@ router.post("/history/find", function (req, res) {
     var contaminante = req.body.contaminante;
     var fechaInicial = req.body.fechaInicial;
     var fechaFinal = req.body.fechaFinal;
-console.log("body: "+JSON.stringify(req.body))
+    console.log("body: " + JSON.stringify(req.body))
     // realizamos una query sobre la base de datos con los filtros
     // que hemos recibido del formulario.
     aqiBD.find(
@@ -101,16 +101,16 @@ console.log("body: "+JSON.stringify(req.body))
                 }
             }]
         }, { // aqui indicamos la proyección de los datos.
-            [contaminante]: 1,
-            "data.time.s": 1,
-            "_id": 0
-        }, function (error, datos) {
-            console.log("datos: "+JSON.stringify(datos))
+        [contaminante]: 1,
+        "data.time.s": 1,
+        "_id": 0
+    }, function (error, datos) {
+        console.log("datos: " + JSON.stringify(datos))
 
-            // una vez obtenidos los datos de la query, los enviamos de vuelta.
-            res.send(datos)
+        // una vez obtenidos los datos de la query, los enviamos de vuelta.
+        res.send(datos)
 
-        });
+    });
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));

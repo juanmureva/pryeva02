@@ -25,8 +25,15 @@ function search(keyword, output) {
 	output.append($("<div/>").html("Cargando..."))
 	output.append($("<div/>").addClass("cp-spinner cp-meter"))
 
+	markers.forEach(marker => {
+		map.removeLayer(marker);
+	});
+
 	//$.getJSON("//api.waqi.info/search/?token=" + token() + "&keyword=" + keyword, function (result) {
 	$.getJSON("http://localhost:3000/pryeva02/localizaciones/search/" + keyword, function (result) {
+
+		
+
 		output.html("<h2>Resultado:</h2>")
 		if (!result || (result.status != "ok")) {
 			output.append("Disculpe, ha ocurrido un problema: ")
@@ -45,7 +52,17 @@ function search(keyword, output) {
 		var locationInfo = $("<div/>")
 		output.append(locationInfo)
 		result.data.forEach(function (location, i) {
-			console.log("localiacion: "+location.localizacion)
+
+			map.setView([location.location.coordinates[0], location.location.coordinates[1]],
+				15);
+			//L.marker([location.location.coordinates[0], location.location.coordinates[1]], { draggable: true }).addTo(map);
+
+			let marker = L.marker([location.location.coordinates[0], location.location.coordinates[1]], { draggable: true });
+			marker.addTo(map);
+			markers.push(marker);
+
+
+			console.log("localiacion: " + location.localizacion)
 			var tr = $("<tr>");
 			tr.append($("<td>").html(location.localizacion))
 			//tr.append($("<td>").html(colorize(station.aqi)))
@@ -53,8 +70,9 @@ function search(keyword, output) {
 			tr.on("click", function () {
 				showLocation(location, locationInfo)
 			})
+
 			table.append(tr)
-			if (i == 0) showLocation(location, locationInfo)
+			//if (i == 0) showLocation(location, locationInfo)
 		})
 	});
 }
@@ -66,6 +84,10 @@ function showLocation(localizacion, output) {
 	output.append($("<div/>").html("Cargando..."))
 	output.append($("<div/>").addClass("cp-spinner cp-meter"))
 
+	markers.forEach(marker => {
+		map.removeLayer(marker);
+	});
+
 	$.getJSON("http://localhost:3000/pryeva02/localizaciones/" + localizacion.localizacion, function (result) {
 
 		output.html("<h2>Localización:</h2>")
@@ -75,60 +97,29 @@ function showLocation(localizacion, output) {
 			return
 		}
 
-		var names = {
-			pm25: "PM<sub>2.5</sub>",
-			pm10: "PM<sub>10</sub>",
-			o3: "Ozono",
-			no2: "Dióxido de Nitrogeno",
-			so2: "Dióxido de Azufre",
-			co: "Monóxido de Carbono",
-			t: "Temperatura",
-			w: "Viento",
-			r: "Lluvia (precipitación)",
-			h: "Humedad Relativa",
-			d: "Rocío",
-			p: "Présión Atmosférica"
-		}
 
-		output.append($("<div>").html(
-			"Estación id: " + result.data[0]._id +
-			"<br> Nombre: " + result.data[0].localizacion)
-			.attr('id', 'estacion')
-			.attr('style', 'color: white')
-			.attr('class', 'estacion'))
+		//------
+		console.log(JSON.stringify(localizacion))
 
-		var table = $("<table/>").addClass("table table-sm table-dark table-bordered")
-		$(table).attr('id', 'tabla');
-		output.append(table)
+		markers.forEach(marker => {
+			map.removeLayer(marker);
+		});
 
-		for (var specie in result.data.iaqi) {
-			var aqi = result.data.iaqi[specie].v
-			var tr = $("<tr>");
-			tr.append($("<td>").html(names[specie] || specie))
-			tr.append($("<td>").html(colorize(aqi, specie)).attr('style', 'text-align:center'))
-			table.append(tr)
-		}
+		L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+			maxZoom: 18
+		}).addTo(map);
+		map.setView([localizacion.location.coordinates[0], localizacion.location.coordinates[1]],
+			15);
+		L.marker([localizacion.location.coordinates[0], localizacion.location.coordinates[1]], { draggable: true }).addTo(map);
+		//------
 
-		// generamos la atribución a la World Air Quality Index Project.
-		for (var i in result.data.attributions) {
-			// recorremos el array de atribuciones que recibimos de la API.
-			var name = result.data.attributions[i].name
-			var url = result.data.attributions[i].url
 
-			if (name == "World Air Quality Index Project") {
-				// si el nombre coincide con el de WAQI Project, genera el texto con sus datos.
-				output.append($("<div>").html("© " + name + ":  &nbsp; - &nbsp;" +
-					'<a href="' + url + '" style="color:white">' + url + '</a>')
-					.attr('id', 'estacion')
-					.attr('style', 'color: white; padding-bottom:20px')
-					.attr('class', 'estacion')
-				)
-			}
-		}
+
 
 		// guardamos el codigo de la estación en el almacén local del navegador
 		// para luego utilizarlo en la pagina HTML.
-		localStorage.setItem('estacion', result.data.idx);
+		localStorage.setItem('localizacion', localizacion._id);
 		/** ASS
 		console.log("en API.js generando el botón guardar datos")
 		// generamos el boton para guardar los datos en la BD.
@@ -141,41 +132,17 @@ function showLocation(localizacion, output) {
 		// generamos la tabla final que contendrá solo las columnas de 
 		// los contaminantes y sus valores, HighCharts se alimentará de
 		// esta tabla para generar la grafica.
-		var table = $("<table/>").addClass("result")
+		var table = $("<table/>").addClass("table table-sm table-dark table-bordered")
 		$(table).attr('id', 'datos');
 		output.append(table)
 		var tr = $("<tr>");
-		tr.append($("<th>").html("Contaminante"));
-		tr.append($("<th>").html("Valor").attr('style', 'text-align: center'));
+		tr.append($("<th>").html(localizacion.localizacion));
+		tr.append($("<th>").html("<a href='/pryeva02/editlocation/"+localizacion.localizacion+"'>ver</a>").attr('style', 'text-align: center'));
 		table.append(tr);
 
-		for (var specie in result.data.iaqi) {
-
-			switch (specie) {
-				case 'co':
-				case 'no2':
-				case 'o3':
-				case 'pm10':
-				case 'pm25':
-				case 'so2':
-
-					var aqi = result.data.iaqi[specie].v
-					var tr2 = $("<tr>");
-					tr2.append($("<td>").html(names[specie] || specie))
-					tr2.append($("<td>").html(aqi, specie))
-					table.append(tr2)
-			}
-		}
-
-		// cuando la tabla final es generada, la ocultamos y 
-		// luego cargamos la grafica.
-		$(document.getElementById("datos")).ready(function () {
-			document.getElementById("datos").style.visibility = "hidden",
-				$.getScript('/pryEva02/public/Code/cargarChartAPI.js',
-					function () { }
-				)
-		});
 	})
+
+
 }
 
 function token() {

@@ -17,7 +17,9 @@ router.get('/:localizacion', async (req, res) => {
 })
 
 router.post("/", function (req, res) {
-
+    console.log("petición recibida: "+JSON.stringify(req.body));
+    var guardadatos = new Localizaciones(req.body);
+    guardadatos.save();
     res.send({"nombre":"esta es la localización 1"});
 });
 
@@ -32,8 +34,14 @@ router.delete("/:idlocalizacion", function (req, res) {
 router.get('/search/:keyword', async (req, res) => {
     let keyword=req.params.keyword;
     console.log("buscando: "+keyword)
-    keyword=keyword.toUpperCase();
-    const localizaciones = await Localizaciones.find({"localizacion" : { $regex: '.*'+keyword+'.*' } })
+    
+    let localizaciones = await Localizaciones.find({"localizacion" : { $regex: '.*'+keyword+'.*' } })
+    if(localizaciones === undefined || localizaciones == null || localizaciones.length == 0)
+    {
+        keyword=keyword.toUpperCase();
+        localizaciones = await Localizaciones.find({"localizacion" : { $regex: '.*'+keyword+'.*' } })
+
+    }
     console.log("localizaciones encontradas: "+localizaciones);
     result={status:"ok",data:localizaciones}
     res.send(

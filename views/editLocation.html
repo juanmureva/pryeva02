@@ -148,52 +148,6 @@
 
                 <div class="col-sm-4" style="display: inline-block; padding: 30px 50px">
 
-
-<!---->
-<div>
-<h2>Añadir Localización</h2>
-  <!-- Trigger the modal with a button -->
-  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Añadir</button>
-
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
-        </div>
-        <div class="modal-body">
-            <form id="newLocForm" method="POST" action="/pryeva02/localizaciones">
-                <div class="form-group">
-                  <label for="localizacionName">Nombre</label>
-                  <input type="text" class="form-control" id="localizacionName" aria-describedby="localizacionHelp" placeholder="Nombre de la localización">
-                  <small id="localizacionHelp" class="form-text text-muted">Este será el nombre de la localización.</small>
-                </div>
-                <div class="form-group">
-                  <label for="latitud">latitud</label>
-                  <input type="text" class="form-control" id="latitudLoc" placeholder="44">
-                </div>
-                <div class="form-group">
-                    <label for="longitud">longitud</label>
-                    <input type="text" class="form-control" id="longitudLoc" placeholder="95">
-                  </div>
-                <button type="button" class="btn btn-primary" onclick="nuevaLocalizacion()">Submit</button>
-              </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-  
-</div>
-<!---->
-
                     <h2>Localizaciones de Terremotos</h2>
 
                     <div>
@@ -215,25 +169,6 @@
                         console.log("Estoy en live.html")
                         // funcion para guardar los datos a traves de la busqueda de estaciones.
                         // (se activa cuando pulsamos el boton de "Guardar Datos en MongoDB")
-
-                        function nuevaLocalizacion(){
-                            // enviamos el formulario codificado en JSON al servidor. 
-                            
-                            let newloc={"localizacion":$('#localizacionName').val(),"latitud":$('#latitudLoc').val(),"longitud":$('#longitudLoc').val(),"location":{"type":"point","coordinates":[$('#latitudLoc').val(),$('#longitudLoc').val()]}}
-                           
-                            fetch('/pryeva02/localizaciones', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(newloc)
-                            }).then(
-                                resp => resp.json()
-                            ).then(
-                                $("#myModal").modal('toggle')
-                                
-                            ).then(
-                                $("#modalGuardaDatos").modal()
-                            )
-                        }
                         function guardaDatos() {
                             // obtenemos la estación que habiamos guardado desde el servidor.
                             var estacion = localStorage.getItem('estacion');

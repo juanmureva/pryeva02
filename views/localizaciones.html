@@ -20,9 +20,19 @@
     <script src="/pryeva02/public/Code/API.js"></script>
     <script src="/pryeva02/public/Code/themes/skies.js"></script>
 
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+
+    <style>
+        #map {
+            width: 300px;
+            height: 200px;
+        }
+    </style>
+
     <style>
         body {
-            background-image: url(/pryeva02/public/images/bgLive.jpg);
+            background-image: url('https://cadenaser00.epimg.net/ser/imagenes/2014/05/07/ciencia/1399417567_740215_0000000000_noticia_normal.jpg');
             background-repeat: no-repeat;
             background-size: cover;
         }
@@ -115,22 +125,22 @@
 
 <body>
 
-
+    
 
     <div>
-            <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                        <a class="nav-link" href="/pryeva02">Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link active" href="/pryeva02/LocalizacionesPage">Calidad del Aire en Tiempo Real</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link" href="/pryeva02/history">Datos Historicos</a>
-                        </li>
-                    </ul>
-                </nav>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/pryeva02">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/pryeva02/LocalizacionesPage">Localizaciones</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pryeva02/history">Datos Historicos</a>
+                </li>
+            </ul>
+        </nav>
 
         <div class="container-fluid">
 
@@ -138,14 +148,14 @@
 
                 <div class="col-sm-4" style="display: inline-block; padding: 30px 50px">
 
-                    <h2>Calidad del Aire en Tiempo Real</h2>
+                    <h2>Localizaciones de Terremotos</h2>
 
                     <div>
 
-                        <h4> Introduce el nombre de la estación:</h4>
+                        <h4> Introduce el nombre de la localización:</h4>
 
                         <input id='input-station' class="form-control" type="text"
-                            placeholder="por ejemplo: 'Bermejales'">
+                            placeholder="por ejemplo: 'ALBORÁN NORTE'">
                         <input id='input-token' hidden value="2925a12d6716caa9e5eff975b281dd6eb985552c">
 
                     </div>
@@ -175,14 +185,31 @@
                                 resp => resp.json()
                             ).then(
                                 $("#modalGuardaDatos").modal()
-                            );              
+                            );
                         };
                     </script>
                 </div>
 
                 <div class="col-sm-8" style="display: inline-block; padding-left: 150px; padding-right: 50px">
 
-                    <div id="container" style="min-width: 400px; height: 400px; margin: 5% auto"></div>
+                    <div id="container" style="min-width: 400px; height: 400px; margin: 5% auto">
+                        <div id="map"></div>
+                        <script>
+                    
+                            var map = L.map('map').
+                                setView([41.66, -4.72],
+                                    14);
+                    
+                            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+                                maxZoom: 18
+                            }).addTo(map);
+                    
+                            L.control.scale().addTo(map);
+                            L.marker([41.66, -4.71], { draggable: true }).addTo(map);
+                    
+                        </script>
+                    </div>
 
                 </div>
 
@@ -209,4 +236,5 @@
         </div>
     </div>
 </body>
+
 </html>

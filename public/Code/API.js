@@ -25,8 +25,8 @@ function search(keyword, output) {
 	output.append($("<div/>").html("Cargando..."))
 	output.append($("<div/>").addClass("cp-spinner cp-meter"))
 
-	$.getJSON("//api.waqi.info/search/?token=" + token() + "&keyword=" + keyword, function (result) {
-
+	//$.getJSON("//api.waqi.info/search/?token=" + token() + "&keyword=" + keyword, function (result) {
+	$.getJSON("http://localhost:3000/pryeva02/localizaciones/search/" + keyword, function (result) {
 		output.html("<h2>Resultado:</h2>")
 		if (!result || (result.status != "ok")) {
 			output.append("Disculpe, ha ocurrido un problema: ")
@@ -42,33 +42,33 @@ function search(keyword, output) {
 		var table = $("<table/>").addClass("table table-sm table-dark table-bordered")
 		output.append(table)
 
-		var stationInfo = $("<div/>")
-		output.append(stationInfo)
-
-		result.data.forEach(function (station, i) {
+		var locationInfo = $("<div/>")
+		output.append(locationInfo)
+		result.data.forEach(function (location, i) {
+			console.log("localiacion: "+location.localizacion)
 			var tr = $("<tr>");
-			tr.append($("<td>").html(station.station.name))
-			tr.append($("<td>").html(colorize(station.aqi)))
-			tr.append($("<td>").html(station.time.stime).attr('style', 'text-align:center'))
+			tr.append($("<td>").html(location.localizacion))
+			//tr.append($("<td>").html(colorize(station.aqi)))
+			//tr.append($("<td>").html(station.time.stime).attr('style', 'text-align:center'))
 			tr.on("click", function () {
-				showStation(station, stationInfo)
+				showLocation(location, locationInfo)
 			})
 			table.append(tr)
-			if (i == 0) showStation(station, stationInfo)
+			if (i == 0) showLocation(location, locationInfo)
 		})
 	});
 }
 
 // funcion que obtiene los datos de la estación que seleccionamos y
 // genera la tabla de sus contaminantes e informacion meteorologica.
-function showStation(station, output) {
-	output.html("<h2>Polución & Condiciones Climaticas:</h2>")
+function showLocation(localizacion, output) {
+	output.html("<h2>Localización:</h2>")
 	output.append($("<div/>").html("Cargando..."))
 	output.append($("<div/>").addClass("cp-spinner cp-meter"))
 
-	$.getJSON("//api.waqi.info/feed/@" + station.uid + "/?token=" + token(), function (result) {
+	$.getJSON("http://localhost:3000/pryeva02/localizaciones/" + localizacion.localizacion, function (result) {
 
-		output.html("<h2>Polución & Condiciones Climaticas:</h2>")
+		output.html("<h2>Localización:</h2>")
 		if (!result || (result.status != "ok")) {
 			output.append("Disculpe, ha ocurrido un problema: ")
 			if (result.data) output.append($("<code>").html(result.data))
@@ -91,9 +91,8 @@ function showStation(station, output) {
 		}
 
 		output.append($("<div>").html(
-				"Estación idx: " + result.data.idx + 
-				"<br> Nombre: " + result.data.city.name + 
-				"<br> Time: " + result.data.time.s)
+			"Estación id: " + result.data[0]._id +
+			"<br> Nombre: " + result.data[0].localizacion)
 			.attr('id', 'estacion')
 			.attr('style', 'color: white')
 			.attr('class', 'estacion'))
@@ -172,9 +171,9 @@ function showStation(station, output) {
 		// luego cargamos la grafica.
 		$(document.getElementById("datos")).ready(function () {
 			document.getElementById("datos").style.visibility = "hidden",
-				$.getScript('/pryEva02/public/Code/cargarChartAPI.js', 
+				$.getScript('/pryEva02/public/Code/cargarChartAPI.js',
 					function () { }
-					)
+				)
 		});
 	})
 }

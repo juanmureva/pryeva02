@@ -32,8 +32,6 @@ function search(keyword, output) {
 	//$.getJSON("//api.waqi.info/search/?token=" + token() + "&keyword=" + keyword, function (result) {
 	$.getJSON("http://localhost:3000/pryeva02/localizaciones/search/" + keyword, function (result) {
 
-		
-
 		output.html("<h2>Resultado:</h2>")
 		if (!result || (result.status != "ok")) {
 			output.append("Disculpe, ha ocurrido un problema: ")
@@ -119,7 +117,6 @@ function showLocation(localizacion, output) {
 
 		// guardamos el codigo de la estación en el almacén local del navegador
 		// para luego utilizarlo en la pagina HTML.
-		alert(JSON.stringify(localizacion))
 		localStorage.setItem('localizacion', JSON.stringify(localizacion));
 		/** ASS
 		console.log("en API.js generando el botón guardar datos")
@@ -138,9 +135,14 @@ function showLocation(localizacion, output) {
 		output.append(table)
 		var tr = $("<tr>");
 		tr.append($("<th>").html(localizacion.localizacion));
-		tr.append($("<th>").html("<button>Editar</button>").attr('style', 'text-align: center'));
+	
+		$("#localizacionNameEdit").val(localizacion.localizacion)
+		$("#latitudLocEdit").val(localizacion.location.coordinates[0])
+		$("#longitudLocEdit").val(localizacion.location.coordinates[1])
+		$("#localizacionIdEdit").val(localizacion._id)		
+		tr.append($("<th>").html("<button type='button' class='btn btn-info btn-md' data-toggle='modal' data-target='#editModal'>Editar</button>").attr('style', 'text-align: center'));
+		tr.append($("<th>").html("<button class='btn btn-info btn-md' onclick='removeLocation()'>Eliminar</button>").attr('style', 'text-align: center'));
 
-		tr.append($("<th>").html("<button onclick='removeLocation()'>Eliminar</button>").attr('style', 'text-align: center'));
 		table.append(tr);
 
 	})
@@ -148,8 +150,8 @@ function showLocation(localizacion, output) {
 
 }
 
-function removeLocation(){
-	let loc=JSON.parse( localStorage.getItem('localizacion'))
+function removeLocation() {
+	let loc = JSON.parse(localStorage.getItem('localizacion'))
 	deleteLocalizacion(loc._id);
 }
 

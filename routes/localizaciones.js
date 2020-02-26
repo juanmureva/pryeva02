@@ -4,51 +4,70 @@ const Localizaciones = require('../models/localizaciones')
 
 
 router.get('/:localizacion', async (req, res) => {
-    let localizacion=req.params.localizacion;
-    console.log("buscando: "+localizacion)
-    localizacion=localizacion.toUpperCase();
-    console.log("buscando: "+JSON.stringify(localizacion))
-    const localizaciones = await Localizaciones.find({"localizacion" : localizacion })
-    console.log("localizaciones encontradas: "+localizaciones);
-    result={status:"ok",data:localizaciones}
+    let localizacion = req.params.localizacion;
+    console.log("buscando: " + JSON.stringify(localizacion))
+    let localizaciones = await Localizaciones.find({ "localizacion": localizacion })
+    if (localizaciones === undefined || localizaciones == null || localizaciones.length == 0) {
+        keyword = keyword.toUpperCase();
+        localizaciones = await Localizaciones.find({ "localizacion": localizacion })
+
+    }
+    console.log("localizaciones encontradas: " + localizaciones);
+    result = { status: "ok", data: localizaciones }
     res.send(
         result
     )
 })
 
 router.post("/", function (req, res) {
-    console.log("petición recibida: "+JSON.stringify(req.body));
+    console.log("petición recibida: " + JSON.stringify(req.body));
     var guardadatos = new Localizaciones(req.body);
     guardadatos.save();
-    res.send({"nombre":"esta es la localización 1"});
+    res.send();
 });
 
-router.put("/:idlocalizacion", function (req, res) {
-    res.send({"nombre":"esta es la localización 1"});
+router.put("/:idlocalizacion", async (req, res) => {
+    let loci = req.body;
+    console.log("petición recibida: " + JSON.stringify(req.body));
+
+    Localizaciones.findById(loci._id, function (err, doc) {
+        if (err)
+            console.log("ha ocurrido un error: " + JSON.stringify(err));
+        doc.localizacion = loci.localizacion;
+        doc.latitud = loci.latitud;
+        doc.longitud = loci.longitud;
+        doc.location.coordenadas = loci.location.coordenadas;
+        result = doc.save(function (err, doc) {
+            if (err) console.log(err);
+            else {
+                res.send("updated: " + JSON.stringify(result));
+            }
+        });
+    });
+
 });
 
 router.delete("/:idlocalizacion", function (req, res) {
-    let idLoc=req.params.idlocalizacion;
+    let idLoc = req.params.idlocalizacion;
     Localizaciones.findByIdAndDelete(idLoc, function (err) {
         if (err) return handleError(err);
-        res.send({"nombre":"borrado ok!"});
-      });
-    
+        res.send({ "nombre": "borrado ok!" });
+    });
+
 });
 
 router.get('/search/:keyword', async (req, res) => {
-    let keyword=req.params.keyword;
-    console.log("buscando: "+keyword)
-    
-    let localizaciones = await Localizaciones.find({"localizacion" : { $regex: '.*'+keyword+'.*' } })
-    if(localizaciones === undefined || localizaciones == null || localizaciones.length == 0)
-    {
-        keyword=keyword.toUpperCase();
-        localizaciones = await Localizaciones.find({"localizacion" : { $regex: '.*'+keyword+'.*' } })
+    let keyword = req.params.keyword;
+    console.log("buscando: " + keyword)
+
+    let localizaciones = await Localizaciones.find({ "localizacion": { $regex: '.*' + keyword + '.*' } })
+    if (localizaciones === undefined || localizaciones == null || localizaciones.length == 0) {
+        keyword = keyword.toUpperCase();
+        localizaciones = await Localizaciones.find({ "localizacion": { $regex: '.*' + keyword + '.*' } })
 
     }
-    console.log("localizaciones encontradas: "+localizaciones);
-    result={status:"ok",data:localizaciones}
+    console.log("localizaciones encontradas: " + localizaciones);
+    result = { status: "ok", data: localizaciones }
     res.send(
         result
     )
@@ -56,7 +75,7 @@ router.get('/search/:keyword', async (req, res) => {
 
 router.get('/', async (req, res) => {
     const localizaciones = await Localizaciones.find({})
-    console.log("localizaciones encontradas: "+localizaciones)
+    console.log("localizaciones encontradas: " + localizaciones)
     res.send(
         localizaciones
     )

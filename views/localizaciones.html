@@ -149,50 +149,106 @@
                 <div class="col-sm-4" style="display: inline-block; padding: 30px 50px">
 
 
-<!---->
-<div>
-<h2>Añadir Localización</h2>
-  <!-- Trigger the modal with a button -->
-  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Añadir</button>
+                    <!---->
+                    <div>
+                        <h2>Añadir Localización</h2>
+                        <!-- Trigger the modal with a button -->
+                        <button type="button" class="btn btn-info btn-lg" data-toggle="modal"
+                            data-target="#myModal">Añadir</button>
 
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
-        </div>
-        <div class="modal-body">
-            <form id="newLocForm" method="POST" action="/pryeva02/localizaciones">
-                <div class="form-group">
-                  <label for="localizacionName">Nombre</label>
-                  <input type="text" class="form-control" id="localizacionName" aria-describedby="localizacionHelp" placeholder="Nombre de la localización">
-                  <small id="localizacionHelp" class="form-text text-muted">Este será el nombre de la localización.</small>
-                </div>
-                <div class="form-group">
-                  <label for="latitud">latitud</label>
-                  <input type="text" class="form-control" id="latitudLoc" placeholder="44">
-                </div>
-                <div class="form-group">
-                    <label for="longitud">longitud</label>
-                    <input type="text" class="form-control" id="longitudLoc" placeholder="95">
-                  </div>
-                <button type="button" class="btn btn-primary" onclick="nuevaLocalizacion()">Submit</button>
-              </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-  
-</div>
-<!---->
+                        <!-- Modal -->
+                        <div class="modal fade" id="myModal" role="dialog">
+                            <div class="modal-dialog">
+
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Modal Header</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="newLocForm" method="POST" action="/pryeva02/localizaciones">
+                                            <div class="form-group">
+                                                <label for="localizacionName">Nombre</label>
+                                                <input type="text" class="form-control" id="localizacionName"
+                                                    aria-describedby="localizacionHelp"
+                                                    placeholder="Nombre de la localización">
+                                                <small id="localizacionHelp" class="form-text text-muted">Este será el
+                                                    nombre de la localización.</small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="latitud">latitud</label>
+                                                <input type="text" class="form-control" id="latitudLoc"
+                                                    placeholder="44">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="longitud">longitud</label>
+                                                <input type="text" class="form-control" id="longitudLoc"
+                                                    placeholder="95">
+                                            </div>
+                                            <button type="button" class="btn btn-primary"
+                                                onclick="nuevaLocalizacion()">Submit</button>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <!---->
+
+
+                    <!---->
+                    <!-- Modal -->
+                    <div class="modal fade" id="editModal" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Modal Header</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="newLocForm">
+                                        <input type="text" class="form-control" id="localizacionIdEdit"
+                                            aria-describedby="localizacionHelp" placeholder="Nombre de la localización">
+
+                                        <div class="form-group">
+                                            <label for="localizacionName">Nombre</label>
+                                            <input type="text" class="form-control" id="localizacionNameEdit"
+                                                aria-describedby="localizacionHelp"
+                                                placeholder="Nombre de la localización">
+                                            <small id="localizacionHelp" class="form-text text-muted">Este será el
+                                                nombre de la localización.</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="latitud">latitud</label>
+                                            <input type="text" class="form-control" id="latitudLocEdit"
+                                                placeholder="44">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="longitud">longitud</label>
+                                            <input type="text" class="form-control" id="longitudLocEdit"
+                                                placeholder="95">
+                                        </div>
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="editLocalizacion()">Submit</button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!---->
 
                     <h2>Localizaciones de Terremotos</h2>
 
@@ -217,9 +273,8 @@
                         // (se activa cuando pulsamos el boton de "Guardar Datos en MongoDB")
 
 
-                        function deleteLocalizacion(localizacionId){
-                            alert("borrando: "+localizacionId)
-                            fetch('/pryeva02/localizaciones/'+localizacionId, {
+                        function deleteLocalizacion(localizacionId) {
+                            fetch('/pryeva02/localizaciones/' + localizacionId, {
                                 method: 'DELETE',
                                 headers: { 'Content-Type': 'application/json' }
                             }).then(
@@ -229,11 +284,37 @@
                             )
                         }
 
-                        function nuevaLocalizacion(){
-                            // enviamos el formulario codificado en JSON al servidor. 
+                        function editLocalizacion() {
+                            let loc = JSON.parse(localStorage.getItem('localizacion'))
                             
-                            let newloc={"localizacion":$('#localizacionName').val(),"latitud":$('#latitudLoc').val(),"longitud":$('#longitudLoc').val(),"location":{"type":"point","coordinates":[$('#latitudLoc').val(),$('#longitudLoc').val()]}}
-                           
+                            let newloc = { "_id":loc._id, "localizacion": $('#localizacionNameEdit').val(), "latitud": $('#latitudLocEdit').val(), "longitud": $('#longitudLocEdit').val(), "location": { "type": "point", "coordinates": [$('#latitudLocEdit').val(), $('#longitudLocEdit').val()] } }
+
+                            fetch('/pryeva02/localizaciones/'+loc._id, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(newloc)
+                            }).then(
+                                resp => resp.json()
+                            ).then(
+                                $("#editModal").modal('toggle')
+
+                            ).then(
+                                
+                                $("#modalGuardaDatos").modal()
+
+                            ).then(function (){
+                                $('#input-station').val("");
+
+                                 $('#result-search').html("");
+
+                            })
+                        }
+
+                        function nuevaLocalizacion() {
+                            // enviamos el formulario codificado en JSON al servidor. 
+
+                            let newloc = { "localizacion": $('#localizacionName').val(), "latitud": $('#latitudLoc').val(), "longitud": $('#longitudLoc').val(), "location": { "type": "point", "coordinates": [$('#latitudLoc').val(), $('#longitudLoc').val()] } }
+
                             fetch('/pryeva02/localizaciones', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -242,7 +323,7 @@
                                 resp => resp.json()
                             ).then(
                                 $("#myModal").modal('toggle')
-                                
+
                             ).then(
                                 $("#modalGuardaDatos").modal()
                             )
@@ -314,23 +395,43 @@
 
 
                 <div class="modal fade" id="modalBorrarDatos" tabindex="-1" role="dialog"
-                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <h5>Datos borrados correctamente.</h5>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h5>Datos borrados correctamente.</h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+
+                <div class="modal fade" id="modalBorrarDatos" tabindex="-1" role="dialog"
+                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h5>Datos borrados correctamente.</h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>

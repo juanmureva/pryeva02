@@ -29,6 +29,8 @@ var aqiBD = mongoose.model(colSismicas, aqiBDSchema);
 
 //importando rutas
 const localizacionRoutes = require('./routes/localizaciones')
+const historicoRoutes = require('./routes/historico')
+
 
 // declaramos las rutas a los diferentes recursos de nuestra aplicación.
 router.use(function (req, res, next) {
@@ -72,6 +74,10 @@ router.post("/live/save", function (req, res) {
             res.send(body);
         }
     });
+});
+
+router.get("/history2", function (req, res) {
+    res.sendFile(path + "history2.html");
 });
 
 router.get("/history", function (req, res) {
@@ -119,6 +125,7 @@ app.use("/pryEva02/public", express.static(__dirname + "/public"));
 
 //rutas
 app.use('/pryEva02/localizaciones', localizacionRoutes)
+app.use('/pryEva02/historico', historicoRoutes)
 app.use("/pryEva02", router);
 
 

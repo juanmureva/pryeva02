@@ -1,4 +1,5 @@
 function magnitudesTerremotos() {
+    $("data").val("Magnitud Terremotos")
     fetch('/pryeva02/historico/queries/magnitudesTerremotos/')
         .then(function (response) {
             return response.json();
@@ -11,6 +12,9 @@ function magnitudesTerremotos() {
 
 
 function tiposTerremotos() {
+    alert($("data").val())
+    $("data").val("Tipos Terremotos")
+
     fetch('/pryeva02/historico/queries/tiposTerremotos/')
         .then(function (response) {
             return response.json();

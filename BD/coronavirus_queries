@@ -1,3 +1,8 @@
+//Datos sacados de:
+//https://covid19.isciii.es/
+//https://covid19.isciii.es/resources/serie_historica_acumulados.csv
+
+
 //consulta de creación de colaccion de comiunidades autonomas
 
 db.raw.aggregate([ 

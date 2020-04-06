@@ -1,0 +1,71 @@
+<%- include('partials/_header'); -%>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js"></script>
+<script src="https://code.highcharts.com/maps/highmaps.js"></script>
+<script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/maps/modules/offline-exporting.js"></script>
+<script src="https://code.highcharts.com/mapdata/countries/es/es-all.js"></script>
+
+<div id="container"></div>
+
+<style type="text/css">
+#container {
+    height: 500px;
+    min-width: 310px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.loading {
+    margin-top: 10em;
+    text-align: center;
+    color: gray;
+}
+
+</style>
+<script type="text/javascript">
+// Initiate the chart
+Highcharts.mapChart('container', {
+    chart: {
+        map: 'countries/gb/gb-all'
+    },
+
+    title: {
+        text: 'Highmaps basic lat/lon demo'
+    },
+
+    mapNavigation: {
+        enabled: true
+    },
+
+    tooltip: {
+        headerFormat: '',
+        pointFormat: '<b>{point.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'
+    },
+
+    series: [
+        {
+            name: 'Basemap',
+            borderColor: '#A0A0A0',
+            nullColor: 'rgba(200, 200, 200, 0.3)',
+            showInLegend: false
+        }, 
+        {
+            name: 'Separators',
+            type: 'mapline',
+            nullColor: '#707070',
+            showInLegend: false,
+            enableMouseTracking: false
+        }, 
+        {
+            // Specify points using lat/lon
+            type: 'mappoint',
+            name: 'Cities',
+            color: Highcharts.getOptions().colors[1],
+            data: <%-result%>
+        }
+    ]
+});
+
+</script>
+
+<%- include('partials/_footer'); -%>

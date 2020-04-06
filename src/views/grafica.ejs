@@ -1,0 +1,115 @@
+<%- include('partials/_header'); -%>
+
+		<style type="text/css">
+#container {
+	min-width: 310px;
+	max-width: 800px;
+	height: 400px;
+	margin: 0 auto
+}
+		</style>
+	</head>
+	<body>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/series-label.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<div id="container"></div>
+
+        <script type="text/javascript">
+            let items = []
+            let pointStart = 2010
+
+            const onLoad = () => {
+                fetch('https://mvicoapp.herokuapp.com/datos-grafica', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        const allYears = res.map(item => item._id.year)
+                        const allGenders = res.map(item => item._id.gender)
+                        let genders = allGenders.filter((gender, index, self) => self.indexOf(gender) === index)
+                        let years = []
+                        let yearsLength = 0
+                        const minYear = Math.min(...allYears)
+                        const maxYear = Math.max(...allYears)
+
+                        yearsLength = (maxYear - minYear) + 2
+                        
+                        for (let i = 0; i < (yearsLength - 1); i++) {
+                            years = [ ...years, minYear + i ]
+                        }
+
+                        genders.forEach(gender => {
+                            items = [
+                                ...items,
+                                {
+                                    name: gender,
+                                    data: years.map(year => {
+                                        const item = res.find(item => item._id.gender === gender && item._id.year === year) 
+
+                                        return item != null ? item.total : null
+                                    })
+                                }
+                            ]
+                        })
+
+                        pointStart = minYear
+
+                        Highcharts.chart('container', {
+                            title: {
+                                text: 'Estadisticas de libros por Género'
+                            },
+
+                            subtitle: {
+                                text: ''
+                            },
+
+                            yAxis: {
+                                title: {
+                                    text: 'Numero de libros'
+                                }
+                            },
+                            legend: {
+                                layout: 'vertical',
+                                align: 'right',
+                                verticalAlign: 'middle'
+                            },
+
+                            plotOptions: {
+                                series: {
+                                    label: {
+                                        connectorAllowed: false
+                                    },
+                                    pointStart: pointStart
+                                }
+                            },
+
+                            series: items,
+
+                            responsive: {
+                                rules: [{
+                                    condition: {
+                                        maxWidth: 500
+                                    },
+                                    chartOptions: {
+                                        legend: {
+                                            layout: 'horizontal',
+                                            align: 'center',
+                                            verticalAlign: 'bottom'
+                                        }
+                                    }
+                                }]
+                            }
+                        });
+                    })
+            }
+
+            window.onload = onLoad()
+		</script>
+<%- include('partials/_footer'); -%>

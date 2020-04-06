@@ -1,0 +1,36 @@
+<%- include('partials/_header'); -%>
+                
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-4" style="display: inline-block; padding: 30px 50px">
+                <h2>Datos por Editorial</h2>
+                <br />
+                    <form action="/barras-find" method="GET">
+                        <div class="form-group">
+                            <label for="editorial"><b>Editorial:</b></label>
+                            <select class="form-control" id="editorial" name="editorial">
+                                <option value="Alfaguara">Alfaguara</option>
+                                <option value="Salamandra">Salamandra</option>
+                                <option value="Akal">Akal</option> 
+                                <option value="Nocturna">Nocturna</option> 
+                                <option value="Botica de Lectores">Botica de Lectores</option> 
+                                <option value="Alianza">Alianza</option> 
+                                <option value="Océano">Océano</option> 
+                                <option value="ZorroRojo">ZorroRojo</option> 
+                                <option value="Anaya">Anaya</option> 
+                                <option value="Aguilar">Aguilar</option> 
+                                <option value="Planeta">Planeta</option>
+                                <option value="RM">RM</option>
+                                <option value="Un Gato en Bicicleta">Un Gato en Bicicleta</option>
+                                <option value="Caótica">Caótica</option>
+                                <option value="Casa del Libro">Casa del Libro</option>
+                                <option value="Acantilado">Acantilado</option> 
+                            </select>
+                        </div>   
+                        <button class="btn btn-primary" type="submit">Cargar Gráfica</button>
+                    </form>
+            </div>
+        </div>
+    </div>
+<br />
+<%- include('partials/_footer'); -%> 

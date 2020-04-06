@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Proyecto Nodejs Mongodb</title>
+        <!-- BOOSTRAP 4 -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <style>
+          body { 
+            background: url("https://cinda.cl/wp-content/uploads/2019/06/libro-abierto-.jpg") 
+            no-repeat fixed center ; 
+            background-size: cover;
+          }
+          </style>
+    </head>
+    <body >
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
+                    <ul class="navbar-nav mr-auto">
+                    <li><a href="/" class="navbar-brand">Inicio</a> </li>
+                    <li><a  href="/ccaa" class="nav-link active">Comunidades Autonomas</a>  </li>
+                    <li><a  href="/libros" class="nav-link active">Libros</a></li>
+                  <!--  <li><a  href="/grafica" class="navbar-brand">Gráfica</a></li>
+                    <li><a  href="/circle" class="navbar-brand">DGráfica</a></li> -->
+                    <li class="nav-item  active dropdown">
+                        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Gráficas
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <a class="dropdown-item" href="/grafica">Géneros</a>
+                          <a class="dropdown-item" href="/circle"> Edades </a>
+                          <a class="dropdown-item" href="/barras"> Editoriales </a>
+                          
+                      </li>
+                      <li class="nav-item  active dropdown">
+                          <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Consultas
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/case">Case</a>
+                            <a class="dropdown-item" href="/unwind">Unwind</a>
+                            <a class="dropdown-item" href="/join0"> Lookup </a>
+                        </li>
+                    </ul>  
+                </nav>
+<br/>
+<!-- Bootstrap core JavaScript-->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+<script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/popper.min.js"></script>
+<script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>

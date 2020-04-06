@@ -1,0 +1,37 @@
+<%- include ('./partials/_header') %> 
+<div class="container">
+        <!-- Formulario para añadir tiendas-->
+        <br/>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card bg-transparent" >
+                    <div class="card-body border border-dark" >
+                            <h3 align="center"> Formulario </h3>
+                            <br/>
+                         <form action="/case2" method="GET">
+                             <div class="form-group">
+                                    <select class="form-control" id="genero" name="genero">
+                                            <option value="Distopia">Distopia</option>
+                                            <option value="Epico">Epico</option>
+                                            <option value="Ficcion Moderna y Contemporanea">Ficcion Moderna y Contemporanea</option> 
+                                            <option value="Historico">Historico</option> 
+                                            <option value="Infantil">Infantil</option> 
+                                            <option value="Otro">Otro</option> 
+                                            <option value="Policiaco y misterio">Policiaco y misterio</option> 
+                                            <option value="Romantico">Romantico</option> 
+                                            <option value="Tragedia">Tragedia</option>  
+                                        </select>
+                             </div>
+                             <div class="form-group">
+                                <input type='number' name="precio" placeholder="Inserte precio máximo" 
+                                class="form-control">
+                            </div>
+                             <button type="submit" class="btn btn-info btn-block">Consultar</button>
+                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<%- include ('./partials/_footer') %> 

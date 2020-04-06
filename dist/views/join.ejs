@@ -1,0 +1,95 @@
+<%- include ('partials/_header') %> 
+<style>
+.input-group.md-form.form-sm.form-2 input.amber-border {
+  border: 1px solid #ffca28;
+  margin: 35px 900px 50px 40px;
+}
+</style>
+<script>
+// Filter table
+
+$(document).ready(function(){
+  $("#tableSearch").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+<div class="container"></div>
+<!-- Formulario para añadir tiendas-->
+<br/>
+<div class="row">
+    <div class="col-md-5">
+        <div class="card bg-transparent" >
+            <div class="card-body border border-dark" >
+                    <h2 align="center"> Formulario </h2>
+                    <br/>
+                 <form action="/join" method="GET">
+                     <div class="form-group">
+                            <select class="form-control" id="genero" name="genero">
+                                    <option value="Distopia">Distopia</option>
+                                    <option value="Epico">Epico</option>
+                                    <option value="Ficcion Moderna y Contemporanea">Ficcion Moderna y Contemporanea</option> 
+                                    <option value="Historico">Historico</option> 
+                                    <option value="Infantil">Infantil</option> 
+                                    <option value="Otro">Otro</option> 
+                                    <option value="Policiaco y misterio">Policiaco y misterio</option> 
+                                    <option value="Romantico">Romantico</option> 
+                                    <option value="Tragedia">Tragedia</option>  
+                                </select>
+                     </div>
+                     <div class="form-group">
+                        <input type='number' name="precio" placeholder="Inserte precio máximo" 
+                        class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type='number' name="edad" placeholder="Inserte la edad máxima" 
+                        class="form-control">
+                    </div>
+                     <button type="submit" class="btn btn-info btn-block">Consultar</button>
+                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Lista -->
+    <br/>
+    <div class="input-group md-form form-sm form-2 pl-0">
+        <h4> &nbsp;&nbsp; Buscador: </h4>
+        <input class="form-control my-0 py-1 amber-border" type="text" placeholder="Search"  id="tableSearch">
+    </div>
+    <br/>
+    <div class="col-nd-7">  
+            <table class="table table-bordered table-hover" style="background-color: white;">
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Titulo</th>
+                        <th>Edad</th>
+                        <th>Precio</th>
+                        <th>Editorial</th>
+                        <th>Localizaciones</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                    <% for(var i = 0; i < result.length; i++) { %>
+                    <tr>
+                        <td> <%= i + 1 %></td>
+                        <td> <%= result[i].titulo%></td>
+                        <td> <%= result[i].edad%></td>
+                        <td> <%= result[i].precio%></td>
+                        <td> <%= result[i].docs[0].nombre%></td>
+                        <% for(var j = 0; j < result[i].docs.length; j++) {%>
+                        <td> <%= result[i].docs[j].localizacion.coordinates%></td>
+                        <%}%>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+    </div>
+</div>
+
+
+<%- include ('partials/_footer') %>

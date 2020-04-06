@@ -1,0 +1,871 @@
+//consulta de creación de colaccion de comiunidades autonomas
+
+db.raw.aggregate([ 
+    {$group:{
+		_id:{CCAA:'$CCAA Codigo ISO'},
+		casos: { $max: "$Casos " },
+		fallecidos: { $max: "$Fallecidos" },
+		recuperados: { $max: "$Recuperados" }
+	}}, 
+    {$sort:{CCAA:1}}
+]);
+
+
+db.raw.aggregate([ 
+    {$group:{
+		_id:{CCAA:'$CCAA Codigo ISO'},
+		casos: { $max: "$Casos " },
+		fallecidos: { $max: "$Fallecidos" },
+		recuperados: { $max: "$Recuperados" }
+	}}, 
+    {$sort:{CCAA:1}},
+	{
+	$project:
+      {
+		_id:0,
+		ccaa: "$_id.CCAA",
+        casos: { $toInt: "$casos" },
+		fallecidos: { $toInt: "$fallecidos" },
+		recuperados: { $toInt: "$recuperados" },
+        "nombre" :
+        {
+          $switch:
+            {
+              branches: [
+                {
+                  case: { $eq : [  "$_id.CCAA" , "PV" ] },
+                  then: "Pais Vasco"
+                },
+				{
+                  case: { $eq : [  "$_id.CCAA" , "CE" ] },
+                  then: "Ceuta"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "AN" ] },
+                  then: "Andalucia"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "AR" ] },
+                  then: "Aragón"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "AS" ] },
+                  then: "Principado de Asturias"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CN" ] },
+                  then: "Canarias"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CB" ] },
+                  then: "Cantabria"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CM" ] },
+                  then: "Castilla-La Mancha"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CL" ] },
+                  then: "Castilla y León"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CT" ] },
+                  then: "Cataluña"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "EX" ] },
+                  then: "Extremadura"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "GA" ] },
+                  then: "Galicia"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "IB" ] },
+                  then: "Islas Baleares"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "RI" ] },
+                  then: "La Rioja"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "MD" ] },
+                  then: "Comunidad de Madrid"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "MC" ] },
+                  then: "Región de Murcia"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "NC" ] },
+                  then: "Comunidad Foral de Navarra"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "NC" ] },
+                  then: "Comunidad Foral de Navarra"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "VC" ] },
+                  then: "Comunidad Valenciana"
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "ME" ] },
+                  then: "Melilla"
+                }
+              ],
+              default: "Not found."
+            }
+        }
+		 
+      }
+	  }
+]);
+
+
+//le añadimos los geojson
+
+db.raw.aggregate([ 
+
+    {$group:{
+		_id:{CCAA:'$CCAA Codigo ISO'},
+		casos: { $max: "$Casos " },
+		fallecidos: { $max: "$Fallecidos" },
+		recuperados: { $max: "$Recuperados" }
+	}}, 
+    {$sort:{CCAA:1}},
+	{
+	$project:
+      {
+		_id:0,
+		ccaa: "$_id.CCAA",
+        casos: { $toInt: "$casos" },
+		fallecidos: { $toInt: "$fallecidos" },
+		recuperados: { $toInt: "$recuperados" },
+        "detalle" :
+        {
+          $switch:
+            {
+              branches: [
+                {
+                  case: { $eq : [  "$_id.CCAA" , "PV" ] },
+                  then: 
+				  {
+						"nombre":"Pais Vasco",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+				{
+                  case: { $eq : [  "$_id.CCAA" , "CE" ] },
+                  then: {
+						"nombre":"Ceuta",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "AN" ] },
+                  then: {
+						"nombre":"Andalucia",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "AR" ] },
+                  then: {
+						"nombre":"Aragón",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "AS" ] },
+                  then: {
+						"nombre":"Principado de Asturias",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CN" ] },
+                  then: {
+						"nombre":"Canarias",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CB" ] },
+                  then: {
+						"nombre":"Cantabria",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CM" ] },
+                  then: {
+						"nombre":"Castilla-La Mancha",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CL" ] },
+                  then: {
+						"nombre":"Castilla y León",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CT" ] },
+                  then: {
+						"nombre":"Cataluña",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "EX" ] },
+                  then: {
+						"nombre":"Extremadura",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "GA" ] },
+                  then: {
+						"nombre":"Galicia",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "IB" ] },
+                  then: {
+						"nombre":"Islas Baleares",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "RI" ] },
+                  then: {
+						"nombre":"La Rioja",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "MD" ] },
+                  then: {
+						"nombre":"Comunidad de Madrid",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "MC" ] },
+                  then: {
+						"nombre":"Región de Murcia",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "NC" ] },
+                  then: {
+						"nombre":"Comunidad Foral de Navarra",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "NC" ] },
+                  then: {
+						"nombre":"Comunidad Foral de Navarra",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "VC" ] },
+                  then: {
+						"nombre":"Comunidad Valenciana",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "ME" ] },
+                  then: {
+						"nombre":"Melilla",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                }
+              ],
+              default: "Not found."
+            }
+        }
+		 
+      }
+	  },
+	  { $set: { "location": { type: "Point", coordinates: [ 40, 5 ] } } }
+]);
+
+
+
+db.raw.aggregate([ 
+    {$group:{
+		_id:{CCAA:'$CCAA Codigo ISO'},
+		casos: { $max: "$Casos " },
+		fallecidos: { $max: "$Fallecidos" },
+		recuperados: { $max: "$Recuperados" }
+	}}, 
+    {$sort:{CCAA:1}},
+	{
+	$project:
+      {
+		_id:0,
+		ccaa: "$_id.CCAA",
+        casos: { $toInt: "$casos" },
+		fallecidos: { $toInt: "$fallecidos" },
+		recuperados: { $toInt: "$recuperados" },
+        "detalle" :
+        {
+          $switch:
+            {
+              branches: [
+                {
+                  case: { $eq : [  "$_id.CCAA" , "PV" ] },
+                  then: 
+				  {
+						"nombre":"Pais Vasco",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+				{
+                  case: { $eq : [  "$_id.CCAA" , "CE" ] },
+                  then: {
+						"nombre":"Ceuta",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "AN" ] },
+                  then: {
+						"nombre":"Andalucia",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "AR" ] },
+                  then: {
+						"nombre":"Aragón",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "AS" ] },
+                  then: {
+						"nombre":"Principado de Asturias",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CN" ] },
+                  then: {
+						"nombre":"Canarias",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CB" ] },
+                  then: {
+						"nombre":"Cantabria",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CM" ] },
+                  then: {
+						"nombre":"Castilla-La Mancha",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CL" ] },
+                  then: {
+						"nombre":"Castilla y León",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "CT" ] },
+                  then: {
+						"nombre":"Cataluña",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "EX" ] },
+                  then: {
+						"nombre":"Extremadura",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "GA" ] },
+                  then: {
+						"nombre":"Galicia",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "IB" ] },
+                  then: {
+						"nombre":"Islas Baleares",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "RI" ] },
+                  then: {
+						"nombre":"La Rioja",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "MD" ] },
+                  then: {
+						"nombre":"Comunidad de Madrid",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "MC" ] },
+                  then: {
+						"nombre":"Región de Murcia",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "NC" ] },
+                  then: {
+						"nombre":"Comunidad Foral de Navarra",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "NC" ] },
+                  then: {
+						"nombre":"Comunidad Foral de Navarra",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "VC" ] },
+                  then: {
+						"nombre":"Comunidad Valenciana",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                },
+                {
+                  case: { $eq : [  "$_id.CCAA" , "ME" ] },
+                  then: {
+						"nombre":"Melilla",
+						"location": { type: "Point", coordinates: [ 40, 5 ] }
+						}
+                }
+              ],
+              default: "Not found."
+            }
+        }
+		 
+      }
+	  },
+	  { $out : "comunidades_autonomas2" }
+]);
+
+
+
+//consulta de datos a nivel nacional:
+ db.historico.aggregate(    { $group: { _id:  "$Fecha" } }    )
+ 
+ //-----------------------------------------------------------------------
+ 
+  db.historico.aggregate(
+   [
+     {
+       $group:
+         {
+           _id: { CCAA:"$CCAA Codigo ISO"},
+           incidencias: { $push:  {  fecha: "$Fecha" ,casos: "$Casos ",Hospitalizados: "$Hospitalizados",UCI: "$UCI",fallecidos: "$Fallecidos", Recuperados: "$Recuperados" } }
+         }
+     }
+   ]
+).pretty();
+
+ 
+ db.historico.aggregate(
+   [
+     {
+       $group:
+         {
+           _id: { CCAA:"$CCAA Codigo ISO", fecha: "$Fecha" },
+           incidencias: { $push:  { casos: "$Casos",Hospitalizados: "$Hospitalizados",UCI: "$UCI",fallecidos: "$Fallecidos", Recuperados: "$Recuperados" } }
+         }
+     }
+   ]
+).pretty();
+
+
+
+ 
+  db.historico.aggregate(
+   [
+     {
+       $group:
+         {
+           _id: { CCAA:"$CCAA Codigo ISO"},
+           incidencias: { $push:  {  fecha: "$Fecha" ,casos: "$Casos ",Hospitalizados: "$Hospitalizados",UCI: "$UCI",fallecidos: "$Fallecidos", Recuperados: "$Recuperados" } }
+         }
+     },
+	 { $unwind: "$fecha" }
+   ]
+).pretty();
+
+
+
+db.historico.aggregate( [ {
+   $project: {
+		ccaa:'$CCAA Codigo ISO',
+		casos: "$Casos " ,
+      date: {
+         $dateFromString: {
+            dateString: '$Fecha',
+            timezone: 'Europe/London',
+			format: "%d/%m/%Y"
+         }
+      }
+	  
+   }
+} ] )
+
+
+db.historico.aggregate( [ {
+   $project: {
+		ccaa:'$CCAA Codigo ISO',
+		casos: { $toInt: "$Casos " }
+      date: {
+         $dateFromString: {
+            dateString: '$Fecha',
+            timezone: 'Europe/London',
+			format: "%d/%m/%Y"
+         }
+      }
+	  
+   }
+} ] )
+
+
+
+db.historico.aggregate(
+   [
+      {
+         $project:
+           {
+             ccaa:'$CCAA Codigo ISO',
+             casos:
+               {
+                 $cond: { if: { $eq: [ "$Casos ", "" ] }, then: 0, else: {$toInt: "$Casos "} }
+               },
+			   hospitalizados:
+               {
+                 $cond: { if: { $eq: [ "$Hospitalizados", "" ] }, then: 0, else: {$toInt: "$Hospitalizados"} }
+               },
+			   uci:
+               {
+                 $cond: { if: { $eq: [ "$UCI", "" ] }, then: 0, else: {$toInt: "$UCI"} }
+               },
+			   fallecidos:
+               {
+                 $cond: { if: { $eq: [ "$Fallecidos", "" ] }, then: 0, else: {$toInt: "$Fallecidos"} }
+               },
+			   recuperados:
+               {
+                 $cond: { if: { $eq: [ "$Recuperados", "" ] }, then: 0, else: {$toInt: "$Recuperados"} }
+               },
+			    date: {
+         $dateFromString: {
+            dateString: '$Fecha',
+            timezone: 'Europe/London',
+			format: "%d/%m/%Y"
+         }
+      }
+           }
+      }
+   ]
+)
+
+
+
+db.historico.aggregate(
+   [
+      {
+         $project:
+           {
+				 date: {
+					 $dateFromString: {
+						dateString: '$Fecha',
+						timezone: 'Europe/London',
+						format: "%d/%m/%Y"
+					 }
+				  },
+				ccaa:'$CCAA Codigo ISO',
+				incidencias:[
+					{
+						casos:
+						   {
+							 $cond: { if: { $eq: [ "$Casos ", "" ] }, then: 0, else: {$toInt: "$Casos "} }
+						   },
+						   fallecidos:
+				   {
+					 $cond: { if: { $eq: [ "$Fallecidos", "" ] }, then: 0, else: {$toInt: "$Fallecidos"} }
+				   },
+				   recuperados:
+				   {
+					 $cond: { if: { $eq: [ "$Recuperados", "" ] }, then: 0, else: {$toInt: "$Recuperados"} }
+				   }
+						}
+					],
+            
+				   hospitalizados:
+				   {
+					   planta:
+					   {
+						 $cond: { if: { $eq: [ "$Hospitalizados", "" ] }, then: 0, else: {$toInt: "$Hospitalizados"} }
+					   },
+					   uci:
+					   {
+						 $cond: { if: { $eq: [ "$UCI", "" ] }, then: 0, else: {$toInt: "$UCI"} }
+					   }
+			   
+					}
+			    
+           }
+      }
+   ]
+)
+
+
+db.historico.aggregate(
+   [
+     {
+       $project:
+          {
+            ccaa:'$CCAA Codigo ISO',
+            qtyGt250: { $gt: [ "$Casos ", 0 ] },
+            _id: 0
+          }
+     }
+   ]
+)
+
+
+
+db.historico.aggregate(
+   [
+      {
+         $project:
+           {
+             ccaa:'$CCAA Codigo ISO',
+             casos:
+               {
+                 $cond: { if: { $eq: [ "$Casos ", "" ] }, then: 0, else: {$toInt: "$Casos "} }
+               }
+           }
+      },
+	  {
+       $project:
+          {
+            ccaa:'$ccaa',
+			casos:'$casos',
+            muertesHoy: { $gt: [ "$casos", 0 ] },
+            _id: 0
+          }
+     }
+   ]
+)
+
+
+//=====================================================================================================================================
+
+db.raw.aggregate(
+   [
+      {
+         $project:
+           {
+				 date: {
+					 $dateFromString: {
+						dateString: '$Fecha',
+						timezone: 'Europe/London',
+						format: "%d/%m/%Y"
+					 }
+				  },
+				ccaa:'$CCAA Codigo ISO',
+				fallecidos:
+               {
+                 $cond: { if: { $eq: [ "$Fallecidos", "" ] }, then: 0, else: {$toInt: "$Fallecidos"} }
+               },
+				incidencias:[
+					{
+						casos:
+						   {
+							 $cond: { if: { $eq: [ "$Casos ", "" ] }, then: 0, else: {$toInt: "$Casos "} }
+						   },
+						   fallecidos:
+				   {
+					 $cond: { if: { $eq: [ "$Fallecidos", "" ] }, then: 0, else: {$toInt: "$Fallecidos"} }
+				   },
+				   recuperados:
+				   {
+					 $cond: { if: { $eq: [ "$Recuperados", "" ] }, then: 0, else: {$toInt: "$Recuperados"} }
+				   }
+						}
+					],
+            
+				   hospitalizados:
+				   {
+					   planta:
+					   {
+						 $cond: { if: { $eq: [ "$Hospitalizados", "" ] }, then: 0, else: {$toInt: "$Hospitalizados"} }
+					   },
+					   uci:
+					   {
+						 $cond: { if: { $eq: [ "$UCI", "" ] }, then: 0, else: {$toInt: "$UCI"} }
+					   }
+			   
+					}
+			    
+           }
+      }
+	  ,
+	  {
+       $project:
+          {
+            ccaa:1,
+			date:1,
+			incidencias:1,
+			hospitalizados:1,
+			muertesHoy: { $gt: [ "$fallecidos", 0 ] }
+          }
+     }
+   ]
+)
+
+
+//Creación de la  coleccion de historico
+
+db.raw.aggregate(
+   [
+      {
+         $project:
+           {
+				 date: {
+					 $dateFromString: {
+						dateString: '$Fecha',
+						timezone: 'Europe/London',
+						format: "%d/%m/%Y"
+					 }
+				  },
+				ccaa:'$CCAA Codigo ISO',
+				fallecidos:
+               {
+                 $cond: { if: { $eq: [ "$Fallecidos", "" ] }, then: 0, else: {$toInt: "$Fallecidos"} }
+               },
+				incidencias:[
+					{
+						casos:
+						   {
+							 $cond: { if: { $eq: [ "$Casos ", "" ] }, then: 0, else: {$toInt: "$Casos "} }
+						   },
+						   fallecidos:
+				   {
+					 $cond: { if: { $eq: [ "$Fallecidos", "" ] }, then: 0, else: {$toInt: "$Fallecidos"} }
+				   },
+				   recuperados:
+				   {
+					 $cond: { if: { $eq: [ "$Recuperados", "" ] }, then: 0, else: {$toInt: "$Recuperados"} }
+				   }
+						}
+					],
+            
+				   hospitalizados:
+				   {
+					   planta:
+					   {
+						 $cond: { if: { $eq: [ "$Hospitalizados", "" ] }, then: 0, else: {$toInt: "$Hospitalizados"} }
+					   },
+					   uci:
+					   {
+						 $cond: { if: { $eq: [ "$UCI", "" ] }, then: 0, else: {$toInt: "$UCI"} }
+					   }
+			   
+					}
+			    
+           }
+      }
+	  ,
+	  {
+       $project:
+          {
+            ccaa:1,
+			date:1,
+			incidencias:1,
+			hospitalizados:1,
+			muertesHoy: { $gt: [ "$fallecidos", 0 ] }
+          }
+     },
+	 { $out:"historico"	 }
+	 
+   ]
+)
+
+//----------------------------------------------------------------------------------
+//consultas por día
+db.historico.aggregate(
+   [
+      {
+         $project:
+           {
+				 date: {
+					 $dateFromString: {
+						dateString: '$Fecha',
+						timezone: 'Europe/London',
+						format: "%d/%m/%Y"
+					 }
+				  },
+				ccaa:'$CCAA Codigo ISO',
+				fallecidos:
+               {
+                 $cond: { if: { $eq: [ "$Fallecidos", "" ] }, then: 0, else: {$toInt: "$Fallecidos"} }
+               },
+				
+						casos:
+						   {
+							 $cond: { if: { $eq: [ "$Casos ", "" ] }, then: 0, else: {$toInt: "$Casos "} }
+						   },
+						   fallecidos:
+				   {
+					 $cond: { if: { $eq: [ "$Fallecidos", "" ] }, then: 0, else: {$toInt: "$Fallecidos"} }
+				   },
+				   recuperados:
+				   {
+					 $cond: { if: { $eq: [ "$Recuperados", "" ] }, then: 0, else: {$toInt: "$Recuperados"} }
+				   }
+						,
+            
+				 
+					   planta:
+					   {
+						 $cond: { if: { $eq: [ "$Hospitalizados", "" ] }, then: 0, else: {$toInt: "$Hospitalizados"} }
+					   },
+					   uci:
+					   {
+						 $cond: { if: { $eq: [ "$UCI", "" ] }, then: 0, else: {$toInt: "$UCI"} }
+					   }
+			   
+			    
+           }
+      },
+	  {
+		
+	  }
+	  
+   ]
+)

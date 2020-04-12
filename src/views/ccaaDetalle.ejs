@@ -1,0 +1,204 @@
+<%- include ('partials/_header') %> 
+
+
+
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<style>
+.input-group.md-form.form-sm.form-2 input.amber-border {
+  border: 1px solid #ffca28;
+  margin: 35px 900px 50px 40px;
+}
+
+/* highcharts*/
+.highcharts-figure, .highcharts-data-table table {
+    min-width: 360px; 
+    max-width: 800px;
+    margin: 1em auto;
+}
+
+.highcharts-data-table table {
+	font-family: Verdana, sans-serif;
+	border-collapse: collapse;
+	border: 1px solid #EBEBEB;
+	margin: 10px auto;
+	text-align: center;
+	width: 100%;
+	max-width: 500px;
+}
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+    padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+    padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
+}
+</style>
+<script>
+// Filter table
+
+$(document).ready(function(){
+  $("#tableSearch").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+
+
+  /* highchart */
+  Highcharts.chart('container', {
+    chart: {
+        type: 'line',
+        width: 800
+    },
+title: {
+    text: 'Actividad del coronavirus en <%=  ccaaResult[0].detalle.nombre;%>'
+},
+
+subtitle: {
+    text: 'Source: https://covid19.isciii.es/'
+},
+
+yAxis: {
+    title: {
+        text: 'personas'
+    }
+},
+
+xAxis: {
+        type: 'datetime'
+    },
+
+legend: {
+    layout: 'vertical',
+    align: 'right',
+    verticalAlign: 'middle'
+},
+
+plotOptions: {
+    series: {
+
+        pointStart: Date.UTC(2010, 1, 20),
+            pointInterval: 24 * 3600 * 1000 // one day
+    }
+},
+
+series: [{
+    name: 'Casos Detectados',
+    data: [<%= arrayCasos%>]
+},{
+    name: 'Fallecidos',
+    data: [<%= arrayMuertos%>]
+},{
+    name: 'Recuperados',
+    data: [<%= arrayRecuperados%>]
+}],
+
+responsive: {
+    rules: [{
+        condition: {
+            maxWidth: 500
+        },
+        chartOptions: {
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom'
+            }
+        }
+    }]
+}
+
+});
+});
+</script>
+
+
+<!---->
+<div class="card" >
+    
+<figure class="highcharts-figure">
+    <div id="container"></div>
+    <p class="highcharts-description" style="width: 80%;">
+       
+    </p>
+</figure>
+
+
+
+
+    <div class="card-body">
+      <h5 class="card-title"><%= ccaaResult[0].detalle.nombre; %></h5>
+      <p class="card-text">
+           El objetivo de los datos que se publican en esta web es saber el número de casos acumulados a la fecha y que por tanto no se puede deducir que la diferencia entre un día y el anterior es el número de casos nuevos ya que esos casos pueden haber sido recuperados de fechas anteriores. Cualquier inferencia que se haga sobre las diferencias de un día para otro deben hacerse con precaución y son únicamente la responsabilidad el autor.
+          <div class="col-nd-7">  
+            <table class="table table-bordered table-hover" style="background-color: white;">
+                <thead>
+                    <tr>                        
+                        <th>Fecha</th>
+                        <th>Casos</th>
+                        <th>fallecidos</th>
+                        <th>recuperados</th>
+                        <th>planta</th>
+                        <th>uci</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                    <% for(var i = 0; i < result.length; i++) { %>
+                    <tr>                       
+                        <td> 
+                            <%
+                            let fechaDate=new Date(result[i].date);
+                            let day = fechaDate.getDate()
+                            let month = fechaDate.getMonth() + 1
+                            let year = fechaDate.getFullYear()
+                            let fechastring="";
+                            if(month < 10){
+                                fechastring=`${day}-0${month}-${year}`;
+                            }else{
+                                fechastring=`${day}-${month}-${year}`
+                            }   
+                            %>
+                            <%= fechastring%></td>
+                        <td> <%= result[i].incidencias[0].casos%></td>
+                        <td> <%= result[i].incidencias[0].fallecidos%></td>
+                        <td> <%= result[i].incidencias[0].recuperados%></td>
+                        <td> <%= result[i].hospitalizados.planta%></td>
+                        <td> <%= result[i].hospitalizados.uci%></td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+    </div>
+        </p>
+      
+    </div>
+  </div>
+<!---->
+
+
+    <!-- Lista -->
+    <br/>
+    
+</div>
+
+
+<%- include ('partials/_footer') %>

@@ -2,18 +2,18 @@ const express = require('express')
 const router = express.Router()
 
 // Database connection
-import {connect} from '../database'
+import { connect } from '../database'
 import { ObjectID } from 'mongodb'
 
-router.get('/',  async (req, res) => {
+router.get('/', async (req, res) => {
     res.render('index')
 })
 
-router.get('/libros',  async (req, res) => {
+router.get('/actividad', async (req, res) => {
     const db = await connect()
-    const result = await db.collection('comunidades_autonomas').find({}).toArray();
-    console.log("result: "+JSON.stringify(result));
-    res.render('libros', {
+    const result = await db.collection('historico').find({}).toArray();
+    console.log("result: " + JSON.stringify(result));
+    res.render('actividad', {
         result
     })
 })
@@ -22,7 +22,7 @@ router.get('/libros',  async (req, res) => {
 //Api Rest
 
 // Motrar toda la coleccion
-router.get('/api', async (req,res) => {
+router.get('/api', async (req, res) => {
     const db = await connect()
     const result = await db.collection('libros').find({}).toArray()
     res.json(result)
@@ -32,7 +32,7 @@ router.get('/api', async (req,res) => {
 router.get('/api:id', async (req, res) => {
     const { id } = req.params
     const db = await connect()
-    const result = await db.collection('libros').findOne({_id: ObjectID(id)})
+    const result = await db.collection('libros').findOne({ _id: ObjectID(id) })
     res.json(result)
 })
 
@@ -63,7 +63,7 @@ router.post('/api', async (req, res) => {
 router.delete('/api:id', async (req, res) => {
     const { id } = req.params
     const db = await connect()
-    const result = await db.collection('libros').deleteOne({_id: ObjectID(id)})
+    const result = await db.collection('libros').deleteOne({ _id: ObjectID(id) })
     res.json({
         message: `Task ${id} deleted`,
         result
@@ -91,7 +91,8 @@ router.put('/api:id', async (req, res) => {
     }
     const db = await connect()
     await db.collection('libros').updateOne({
-        _id: ObjectID(id)}, {$set: update})
+        _id: ObjectID(id)
+    }, { $set: update })
     res.json({
         message: `Task ${id} Update`
     })
@@ -99,41 +100,74 @@ router.put('/api:id', async (req, res) => {
 })
 
 
-// CRUD TIENDdetalleAS
+// CRUD ccaa
 
 // Listar todas las detalle
-router.get('/ccaa',  async (req, res) => {
+router.get('/ccaa', async (req, res) => {
     const db = await connect()
     const test = await db.showCollections;
-    db.listCollections().toArray(function(err, collInfos) {
-        console.log("result11: "+JSON.stringify(collInfos));
+    db.listCollections().toArray(function (err, collInfos) {
+        console.log("result11: " + JSON.stringify(collInfos));
 
     })
     const result = await db.collection('comunidades_autonomas2').find({}).toArray()
-    console.log("result: "+JSON.stringify(result));
+    console.log("result: " + JSON.stringify(result));
 
     res.render('ccaa', {
         result
     })
 })
 
-// Eliminar tienda
-router.get('/delete/:id', async (req, res) => {
-    const { id } = req.params 
+// Listar todas las detalle
+router.get('/ccaa/:ccaaCode', async (req, res) => {
+    const { ccaaCode } = req.params
+    console.log("llamada a get ccaa: " + ccaaCode);
     const db = await connect()
-    await db.collection('comunidades_autonomas2').deleteOne({_id: ObjectID(id)})
-   res.redirect('/ccaa')
+
+    const result = await db.collection('historico').find({ 'ccaa': ccaaCode }).sort( { date: 1 } ).toArray()
+
+    const ccaaResult = await db.collection('comunidades_autonomas2').find({ 'ccaa': ccaaCode }).toArray()
+
+    const arrayCasos = [];
+    const arrayMuertos = [];
+    const arrayRecuperados = [];
+
+    for (var i = 0; i < result.length; i++) {
+        arrayCasos.push(result[i].incidencias[0].casos);
+        arrayMuertos.push(result[i].incidencias[0].fallecidos);
+        arrayRecuperados.push(result[i].incidencias[0].recuperados);
+    }
+
+
+    console.log("result: " + JSON.stringify(result));
+
+    res.render('ccaaDetalle', {
+        result,
+        arrayCasos,arrayMuertos,arrayRecuperados,
+        ccaaResult
+    })
+})
+
+// Eliminar ccaa
+router.get('/delete/:id', async (req, res) => {
+    const { id } = req.params
+    const db = await connect()
+    await db.collection('comunidades_autonomas2').deleteOne({ _id: ObjectID(id) })
+    res.redirect('/ccaa')
 })
 
 // Añadir ccaa
 router.get('/add', async (req, res) => {
     const db = await connect()
     const comunidad = {
-        nombre: req.query.nombre,
+
         ccaa: req.query.ccaa,
-        location: {
-            type:'Point',
-            coordinates: [parseFloat(req.query.w), parseFloat(req.query.n)]
+        detalle: {
+            nombre: req.query.nombre,
+            location: {
+                type: 'Point',
+                coordinates: [parseFloat(req.query.w), parseFloat(req.query.n)]
+            }
         }
     }
     await db.collection('comunidades_autonomas2').insertOne(comunidad)
@@ -142,33 +176,34 @@ router.get('/add', async (req, res) => {
 
 // Editar ccaa
 router.get('/edit/:id', async (req, res) => {
-    const { id } = req.params 
+    const { id } = req.params
     const db = await connect()
-    const result = await db.collection('comunidades_autonomas2').findOne({_id: ObjectID(id)})
+    const result = await db.collection('comunidades_autonomas2').findOne({ _id: ObjectID(id) })
     res.render('editccaa', {
         result
-    })   
+    })
 })
 
 router.get('/update/:id', async (req, res) => {
     const { id } = req.params
-    console.log("req.query: "+JSON.stringify(req.query));
-    const update = { 
-        
+    console.log("req.query: " + JSON.stringify(req.query));
+    const update = {
+
         ccaa: req.query.ccaa,
-        detalle:{
+        detalle: {
             nombre: req.query.nombre,
             location: {
-                type:'Point',
+                type: 'Point',
                 coordinates: [parseFloat(req.query.w), parseFloat(req.query.n)]
             }
         }
-        
+
     }
     const db = await connect()
     await db.collection('comunidades_autonomas2').updateOne({
-        _id: ObjectID(id)}, {$set: update})
-        res.redirect('/ccaa')
+        _id: ObjectID(id)
+    }, { $set: update })
+    res.redirect('/ccaa')
 })
 
 
@@ -183,12 +218,582 @@ router.get('/grafica', async (req, res) => {
 // Publicaciones de cada año por género 
 router.get('/datos-grafica', async (req, res) => {
     const db = await connect()
-    const result =  await db.collection('libros').aggregate([
-        { 
-            $group:{
-                _id:{
+    const test=[
+    {
+      "_id": {
+        "gender": "Distopia",
+        "year": 2010
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Distopia",
+        "year": 2011
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Distopia",
+        "year": 2012
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Distopia",
+        "year": 2013
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Distopia",
+        "year": 2014
+      },
+      "total": 5
+    },
+    {
+      "_id": {
+        "gender": "Distopia",
+        "year": 2015
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Distopia",
+        "year": 2016
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Distopia",
+        "year": 2017
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Distopia",
+        "year": 2018
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Epico",
+        "year": 2010
+      },
+      "total": 5
+    },
+    {
+      "_id": {
+        "gender": "Epico",
+        "year": 2011
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Epico",
+        "year": 2012
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Epico",
+        "year": 2013
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Epico",
+        "year": 2014
+      },
+      "total": 5
+    },
+    {
+      "_id": {
+        "gender": "Epico",
+        "year": 2015
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Epico",
+        "year": 2016
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Epico",
+        "year": 2017
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Epico",
+        "year": 2018
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Ficcion Moderna y Contemporanea",
+        "year": 2010
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Ficcion Moderna y Contemporanea",
+        "year": 2011
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Ficcion Moderna y Contemporanea",
+        "year": 2012
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Ficcion Moderna y Contemporanea",
+        "year": 2013
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Ficcion Moderna y Contemporanea",
+        "year": 2014
+      },
+      "total": 5
+    },
+    {
+      "_id": {
+        "gender": "Ficcion Moderna y Contemporanea",
+        "year": 2015
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Ficcion Moderna y Contemporanea",
+        "year": 2016
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Ficcion Moderna y Contemporanea",
+        "year": 2017
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Ficcion Moderna y Contemporanea",
+        "year": 2018
+      },
+      "total": 7
+    },
+    {
+      "_id": {
+        "gender": "Historico",
+        "year": 2010
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Historico",
+        "year": 2011
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Historico",
+        "year": 2012
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Historico",
+        "year": 2013
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Historico",
+        "year": 2014
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Historico",
+        "year": 2015
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Historico",
+        "year": 2016
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Historico",
+        "year": 2017
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Historico",
+        "year": 2018
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Infantil",
+        "year": 2010
+      },
+      "total": 5
+    },
+    {
+      "_id": {
+        "gender": "Infantil",
+        "year": 2011
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Infantil",
+        "year": 2012
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Infantil",
+        "year": 2013
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Infantil",
+        "year": 2014
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Infantil",
+        "year": 2015
+      },
+      "total": 5
+    },
+    {
+      "_id": {
+        "gender": "Infantil",
+        "year": 2016
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Infantil",
+        "year": 2017
+      },
+      "total": 5
+    },
+    {
+      "_id": {
+        "gender": "Infantil",
+        "year": 2018
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Otro",
+        "year": 2010
+      },
+      "total": 7
+    },
+    {
+      "_id": {
+        "gender": "Otro",
+        "year": 2011
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Otro",
+        "year": 2012
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Otro",
+        "year": 2013
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Otro",
+        "year": 2014
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Otro",
+        "year": 2015
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Otro",
+        "year": 2016
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Otro",
+        "year": 2017
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Otro",
+        "year": 2018
+      },
+      "total": 5
+    },
+    {
+      "_id": {
+        "gender": "Policiaco y misterio",
+        "year": 2010
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Policiaco y misterio",
+        "year": 2011
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Policiaco y misterio",
+        "year": 2012
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Policiaco y misterio",
+        "year": 2013
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Policiaco y misterio",
+        "year": 2014
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Policiaco y misterio",
+        "year": 2015
+      },
+      "total": 7
+    },
+    {
+      "_id": {
+        "gender": "Policiaco y misterio",
+        "year": 2016
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Policiaco y misterio",
+        "year": 2017
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Policiaco y misterio",
+        "year": 2018
+      },
+      "total": 4
+    },
+    {
+      "_id": {
+        "gender": "Romantico",
+        "year": 2010
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Romantico",
+        "year": 2011
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Romantico",
+        "year": 2012
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Romantico",
+        "year": 2013
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Romantico",
+        "year": 2014
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Romantico",
+        "year": 2015
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Romantico",
+        "year": 2016
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Romantico",
+        "year": 2017
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Romantico",
+        "year": 2018
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Tragedia",
+        "year": 2010
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Tragedia",
+        "year": 2011
+      },
+      "total": 1
+    },
+    {
+      "_id": {
+        "gender": "Tragedia",
+        "year": 2012
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Tragedia",
+        "year": 2013
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Tragedia",
+        "year": 2014
+      },
+      "total": 3
+    },
+    {
+      "_id": {
+        "gender": "Tragedia",
+        "year": 2015
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Tragedia",
+        "year": 2016
+      },
+      "total": 6
+    },
+    {
+      "_id": {
+        "gender": "Tragedia",
+        "year": 2017
+      },
+      "total": 2
+    },
+    {
+      "_id": {
+        "gender": "Tragedia",
+        "year": 2018
+      },
+      "total": 6
+    }
+  ];
+/*
+    const result = await db.collection('libros').aggregate([
+        {
+            $group: {
+                _id: {
                     gender: "$genero",
-                    year:{
+                    year: {
                         $year: "$fechaEdicion"
                     }
                 },
@@ -196,26 +801,27 @@ router.get('/datos-grafica', async (req, res) => {
             }
         },
         {
-            $sort:{
+            $sort: {
                 "_id.gender": 1,
                 "_id.year": 1
             }
         }
     ]).toArray()
-    
-    res.json(result)
+*/
+
+    res.json(test)
 })
 
-router.get('/circle', async (req,res) => {
+router.get('/circle', async (req, res) => {
     const db = await connect()
-    const result = await db.collection('libros').aggregate( [
+    const result = await db.collection('libros').aggregate([
         {
-          $bucket: 
+            $bucket:
             {
-                groupBy: "$edad",                        
+                groupBy: "$edad",
                 boundaries: [5, 8, 11, 15, 18, 19],
                 output: {
-                    "count": {$sum: 1}
+                    "count": { $sum: 1 }
                 }
             }
         }
@@ -232,7 +838,7 @@ router.get('/barras', async (req, res) => {
 router.get('/barras-find', async (req, res) => {
     const editorial = req.query.editorial
     const db = await connect()
-    const result = await db.collection('libros').aggregate( [
+    const result = await db.collection('libros').aggregate([
         {
             $match: {
                 editorial: editorial
@@ -242,16 +848,16 @@ router.get('/barras-find', async (req, res) => {
             $group: {
                 _id: {
                     genero: "$genero",
-                    year:{$year:"$fechaEdicion"}
-    
+                    year: { $year: "$fechaEdicion" }
+
                 },
-                total: {$sum:1}
+                total: { $sum: 1 }
             }
         },
         {
-            $sort:{
-                "_id.genero":1,
-                "_id.years":1
+            $sort: {
+                "_id.genero": 1,
+                "_id.years": 1
             }
         }
     ]).toArray()
@@ -263,7 +869,7 @@ router.get('/barras-find', async (req, res) => {
 
     // Format result
     let resultData = []
-    genders.forEach(gender => { 
+    genders.forEach(gender => {
         resultData = [
             ...resultData,
             {
@@ -274,7 +880,7 @@ router.get('/barras-find', async (req, res) => {
                 })
             }
         ]
-        
+
     });
     console.log(resultData)
     res.render('HGbarras', {
@@ -291,11 +897,18 @@ router.get('/mapa', async (req, res) => {
     let resultData = []
     result.forEach(item => {
         resultData = [
-            ...resultData, 
+            ...resultData,
             {
                 name: item.detalle.nombre,
+                casos: item.casos,
+                ccaa: item.ccaa,
+                lat: parseFloat(item.detalle.location.coordinates[0]),
+                lon: parseFloat(item.detalle.location.coordinates[1])
+
+                /*
                 lat: parseFloat(37.3828300),
                 lon: parseFloat(-5.9731700)
+                */
             }
         ]
     });
@@ -316,45 +929,45 @@ router.get('/case2', async (req, res) => {
     const genero = req.query.genero
     const precio = parseInt(req.query.precio)
     const db = await connect()
-    const result = await db.collection('libros').aggregate( [
+    const result = await db.collection('libros').aggregate([
         {
             $match: {
                 genero: genero,
-                precio: {$lt: precio}
+                precio: { $lt: precio }
             }
         },
-       {
-         $project:
-           {
-             "titulo" : 1,
-             "puntuacion" :
-             {
-               $switch:
-                 {
-                   branches: [
-                     {
-                       case: { $eq : [ "$premios.nominados", 0 ] },
-                       then: "0 estrellas"
-                     },
-                     {
-                        case: { $and : [ { $ne : [ "$premios.nominados", 0 ] }, {$eq: ["$premios.wins",0]}]},
-                        then: "1 estrella"
-                      },
-                      {
-                         case: { $and : [ {$ne: ["$premios.wins",0]}, {$lte: ["$premios.wins", 3]}]},
-                         then: "2 estrellas"
-                       },
-                       {
-                          case: { $and : [ {$gt: ["$premios.wins", 3]}]},
-                          then: "3 estrellas"
-                        }
-                   ],
-                   default: "No cumple las condiciones"
-                 }
-              }
-           }
+        {
+            $project:
+            {
+                "titulo": 1,
+                "puntuacion":
+                {
+                    $switch:
+                    {
+                        branches: [
+                            {
+                                case: { $eq: ["$premios.nominados", 0] },
+                                then: "0 estrellas"
+                            },
+                            {
+                                case: { $and: [{ $ne: ["$premios.nominados", 0] }, { $eq: ["$premios.wins", 0] }] },
+                                then: "1 estrella"
+                            },
+                            {
+                                case: { $and: [{ $ne: ["$premios.wins", 0] }, { $lte: ["$premios.wins", 3] }] },
+                                then: "2 estrellas"
+                            },
+                            {
+                                case: { $and: [{ $gt: ["$premios.wins", 3] }] },
+                                then: "3 estrellas"
+                            }
+                        ],
+                        default: "No cumple las condiciones"
+                    }
+                }
+            }
         }
-        
+
     ]).toArray()
     res.render('tcase', {
         result
@@ -364,19 +977,19 @@ router.get('/case2', async (req, res) => {
 //usando unwind
 router.get('/unwind', async (req, res) => {
     const db = await connect()
-    const result = await db.collection('libros').aggregate( [
+    const result = await db.collection('libros').aggregate([
         {
             $unwind: "$autores"
         },
         {
             $group: {
                 _id: "$autores",
-                total: {$sum:1}
+                total: { $sum: 1 }
             }
         },
-         {
-             $sort: { _id:1}
-         }  
+        {
+            $sort: { _id: 1 }
+        }
     ]).toArray()
     res.render('unwind', {
         result
@@ -393,34 +1006,34 @@ router.get('/join', async (req, res) => {
     const precio = parseInt(req.query.precio)
     const edad = parseInt(req.query.edad)
     const db = await connect()
-    const result = await db.collection('libros').aggregate( [
+    const result = await db.collection('libros').aggregate([
         {
             $lookup:
-              {
+            {
                 from: "tiendas",
                 localField: "editorial",
                 foreignField: "nombre",
                 as: "docs"
-              }
-         },
-         {
-             $match: {
-                 genero: genero,
-                 edad: {$lte: edad},
-                 precio: {$lte: precio},
-             }
-         },
-         {
-             $project: {
-                 titulo: 1,
-                 edad:1,
-                 precio:1,
-                 "docs.nombre":1,
-                 "docs.localizacion.coordinates":1
-             }
-         }
+            }
+        },
+        {
+            $match: {
+                genero: genero,
+                edad: { $lte: edad },
+                precio: { $lte: precio },
+            }
+        },
+        {
+            $project: {
+                titulo: 1,
+                edad: 1,
+                precio: 1,
+                "docs.nombre": 1,
+                "docs.localizacion.coordinates": 1
+            }
+        }
     ]).toArray()
-    console.log(genero,edad,precio)
+    console.log(genero, edad, precio)
     res.render('join', {
         result
     })

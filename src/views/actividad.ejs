@@ -27,22 +27,26 @@ $(document).ready(function(){
     <div class="col-nd-7">  
             <table class="table table-bordered table-hover" style="background-color: white;">
                 <thead>
-                    <tr>
-                        <th>Nº</th>
-                        <th>Titulo</th>
-                        <th>Autor</th>
-                        <th>Género</th>
-                        <th>Editorial</th>
+                    <tr>                        
+                        <th>Fecha</th>
+                        <th>CCAA</th>
+                        <th>Casos</th>
+                        <th>fallecidos</th>
+                        <th>recuperados</th>
+                        <th>planta</th>
+                        <th>uci</th>
                     </tr>
                 </thead>
                 <tbody id="myTable">
                     <% for(var i = 0; i < result.length; i++) { %>
-                    <tr>
-                        <td> <%= i + 1 %></td>
-                        <td> <%= result[i].titulo%></td>
-                        <td> <%= result[i].autores%></td>
-                        <td> <%= result[i].genero%></td>
-                        <td> <%= result[i].editorial%></td>
+                    <tr>                       
+                        <td> <%= result[i].date%></td>
+                        <td> <%= result[i].ccaa%></td>
+                        <td> <%= result[i].incidencias[0].casos%></td>
+                        <td> <%= result[i].incidencias[0].fallecidos%></td>
+                        <td> <%= result[i].incidencias[0].recuperados%></td>
+                        <td> <%= result[i].hospitalizados.planta%></td>
+                        <td> <%= result[i].hospitalizados.uci%></td>
                     </tr>
                     <% } %>
                 </tbody>

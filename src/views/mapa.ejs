@@ -2,13 +2,14 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js"></script>
 <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+<script src="https://code.highcharts.com/maps/modules/data.js"></script>
 <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/maps/modules/offline-exporting.js"></script>
+<script src="https://code.highcharts.com/mapdata/countries/us/us-all.js"></script>
 <script src="https://code.highcharts.com/mapdata/countries/es/es-all.js"></script>
 
-<div id="container"></div>
 
-<style type="text/css">
+<style>
 #container {
     height: 500px;
     min-width: 310px;
@@ -20,52 +21,134 @@
     text-align: center;
     color: gray;
 }
-
 </style>
-<script type="text/javascript">
-// Initiate the chart
-Highcharts.mapChart('container', {
-    chart: {
-        map: 'countries/gb/gb-all'
-    },
 
-    title: {
-        text: 'Highmaps basic lat/lon demo'
-    },
+<script>
+    var H = Highcharts,
+    map = H.maps['countries/es/es-all'],
+    chart;
 
-    mapNavigation: {
-        enabled: true
-    },
+// Add series with state capital bubbles
+Highcharts.getJSON('https://cdn.jsdelivr.net/gh/highcharts/highcharts@v7.0.0/samples/data/us-capitals.json', function (json) {
+    var data = [];
 
-    tooltip: {
-        headerFormat: '',
-        pointFormat: '<b>{point.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'
-    },
+    //--------------------
+    let test3=<%-result%>;
+    let test2=[{
+    "_id": 	"5e8af0d8b14730ff89aba1fe",
+	"ccaa":"NC"
+	,"casos":886
+	,"fallecidos":9
+	,"recuperados":98
+	,"detalle":{
+		"nombre":"Comunidad Foral de Navarra",
+		"location":{
+			"coordinates":[37.3828300,-5.9731700]
+			}
+		}
+    
+    }]
+    //--------------------
 
-    series: [
-        {
+    let test=[{
+    "abbrev": "AL",
+    "parentState": "Alabama",
+    "capital": "Montgomery",
+    "lat": 37.3828300,
+    "lon": -5.9731700,
+    "population": 205764
+  }]
+  console.log("map: "+JSON.stringify(test3));
+  test3.forEach(function (p) {
+      /*
+        p.lat=p.detalle.location.coordinates[0];
+        p.lon=p.detalle.location.coordinates[1];
+        p.nombre=p.detalle.nombre;
+        */
+        p.z = p.casos;
+        data.push(p);
+    });
+
+    chart = Highcharts.mapChart('container', {
+        title: {
+            text: 'Mapa de contagios por coronavirus en las CCAA'
+        },
+
+        tooltip: {
+            pointFormat: '{point.name}, {point.ccaa}<br>' +
+                'casos: {point.casos}'
+                //'Lat: {point.lat}<br>' +
+                //'Lon: {point.lon}<br>' +
+                
+        },
+
+        series: [{
             name: 'Basemap',
-            borderColor: '#A0A0A0',
-            nullColor: 'rgba(200, 200, 200, 0.3)',
+            mapData: map,
+            borderColor: '#606060',
+            nullColor: 'rgba(200, 200, 200, 0.2)',
             showInLegend: false
-        }, 
-        {
+        }, {
             name: 'Separators',
             type: 'mapline',
-            nullColor: '#707070',
-            showInLegend: false,
-            enableMouseTracking: false
-        }, 
-        {
-            // Specify points using lat/lon
-            type: 'mappoint',
-            name: 'Cities',
-            color: Highcharts.getOptions().colors[1],
-            data: <%-result%>
+            data: H.geojson(map, 'mapline'),
+            color: '#101010',
+            enableMouseTracking: false,
+            showInLegend: false
+        }, {
+            type: 'mapbubble',
+            dataLabels: {
+                enabled: true,
+                format: '{point.capital}'
+            },
+            name: 'infectados',
+            data: data,
+            maxSize: '15%',
+            color: H.getOptions().colors[8]
+        }]
+    });
+});
+
+// Display custom label with lat/lon next to crosshairs
+document.getElementById('container').addEventListener('mousemove', function (e) {
+    var position;
+    if (chart) {
+        if (!chart.lab) {
+            chart.lab = chart.renderer.text('', 0, 0)
+                .attr({
+                    zIndex: 5
+                })
+                .css({
+                    color: '#505050'
+                })
+                .add();
         }
-    ]
+
+        e = chart.pointer.normalize(e);
+        position = chart.fromPointToLatLon({
+            x: chart.xAxis[0].toValue(e.chartX),
+            y: chart.yAxis[0].toValue(e.chartY)
+        });
+
+/*
+        chart.lab.attr({
+            x: e.chartX + 5,
+            y: e.chartY - 22,
+            text: 'Lat: ' + position.lat.toFixed(2) + '<br>Lon: ' + position.lon.toFixed(2)
+        });
+*/
+    }
+});
+
+document.getElementById('container').addEventListener('mouseout', function () {
+    if (chart && chart.lab) {
+        chart.lab.destroy();
+        chart.lab = null;
+    }
 });
 
 </script>
+<div id="container"></div>
+
 
 <%- include('partials/_footer'); -%>
